@@ -3,7 +3,8 @@
     "version": "0.0.0",
     "scripts": {
         "compile": "./node_modules/.bin/truffle compile",
-        "ganache": "./node_modules/.bin/ganache-cli",
+        "migrate": "./node_modules/.bin/truffle migrate",
+        "ganache": "./node_modules/.bin/ganache-cli --networkId 429 --chainId 429",
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview"
@@ -16,6 +17,7 @@
         "@vitejs/plugin-vue": "^3.1.2",
         "ganache-cli": "^6.12.2",
         "truffle": "^5.6.3",
-        "vite": "^3.1.8"
+        "vite": "^3.1.8",
+        "web3": "^1.8.0"
     }
 }
