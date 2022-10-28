@@ -1,6 +1,10 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
+
+import MetamaskInit from './metamask'
+
+window.addEventListener('DOMContentLoaded', MetamaskInit);
 </script>
 
 <template>
@@ -13,6 +17,7 @@ import TheWelcome from './components/TheWelcome.vue'
   </header>
 
   <main>
+    <button id="connectButton"></button>
     <TheWelcome />
   </main>
 </template>
