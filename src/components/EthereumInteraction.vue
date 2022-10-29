@@ -9,6 +9,12 @@ const Init = async () => {
     await myInterface.initialize();
 
     const onClickInstall = async () => {
+        onboardButton.disabled = true;
+        await myInterface.installMetaMask();
+    }
+
+    const onClickConnect = async () => {
+        onboardButton.disabled = true;
         await myInterface.connectMetaMask();
         updateButtons();
     }
@@ -17,11 +23,11 @@ const Init = async () => {
         //Now we check to see if MetaMask is installed
         if (!myInterface.isMetaMaskInstalled()) {
             onboardButton.innerText = 'Click here to install MetaMask!';
-            onboardButton.onclick = myInterface.installMetaMask;
+            onboardButton.onclick = onClickInstall;
             onboardButton.disabled = false;
         } else if (!myInterface.isMetaMaskConnected()) {
             onboardButton.innerText = 'Connect';
-            onboardButton.onclick = onClickInstall;
+            onboardButton.onclick = onClickConnect;
             onboardButton.disabled = false;
         } else {
             onboardButton.innerText = 'Connected';

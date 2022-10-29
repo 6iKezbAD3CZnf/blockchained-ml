@@ -21,12 +21,10 @@ class MyInterface {
         return Boolean(ethereum && ethereum.isMetaMask);
     };
 
-    //This will start the onboarding proccess
-    installMetaMask = () => {
-        //We create a new MetaMask onboarding object to use in our app
+    installMetaMask = async () => {
         this.onboarding = new MetaMaskOnboarding({ forwarderOrigin: this.forwarderOrigin });
-        //On this object we have startOnboarding which will start the onboarding process for our end user
-        this.onboarding.startOnboarding();
+        await this.onboarding.startOnboarding();
+        await this.initialize();
     };
 
     connectMetaMask = async () => {
@@ -42,7 +40,6 @@ class MyInterface {
     };
 
     isMetaMaskConnected = () => {
-        console.log(this.accounts);
         return this.accounts && this.accounts.length > 0
     }
 }
