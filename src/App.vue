@@ -2,6 +2,7 @@
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import EthereumInteraction from './components/EthereumInteraction.vue'
+import SwitchChain from './components/SwitchChain.vue'
 </script>
 
 <template>
@@ -11,6 +12,7 @@ import EthereumInteraction from './components/EthereumInteraction.vue'
     <router-link to="/model">Model</router-link>&nbsp
     Blockchained Learning&nbsp
     <a href="https://github.com/6iKezbAD3CZnf/blockchained-learning" target="_blank" rel="noopener">Github</a>&nbsp
+    <SwitchChain />
     <EthereumInteraction />
   </header>
 
