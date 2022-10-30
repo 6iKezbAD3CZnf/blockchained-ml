@@ -1,17 +1,23 @@
 import { createWebHistory, createRouter } from "vue-router";
-import HelloWorld from "@/components/HelloWorld.vue";
-import TheWelcome from "@/components/TheWelcome.vue";
+import Train from "@/components/Train.vue";
+import Infer from "@/components/Infer.vue";
+import Model from "@/components/Model.vue";
 
 const routes = [
   {
-    path: "/",
-    name: "Home",
-    component: TheWelcome,
+    path: "/train",
+    name: "Train",
+    component: Train,
   },
   {
-    path: "/about",
-    name: "About",
-    component: HelloWorld,
+    path: "/infer",
+    name: "Infer",
+    component: Infer,
+  },
+  {
+    path: "/model",
+    name: "Model",
+    component: Model,
   },
 ];
 
