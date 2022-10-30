@@ -2,6 +2,7 @@
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import EthereumInteraction from './components/EthereumInteraction.vue'
+import ModelTrain from './components/ModelTrain.vue'
 </script>
 
 <template>
@@ -16,7 +17,21 @@ import EthereumInteraction from './components/EthereumInteraction.vue'
   <main>
     <EthereumInteraction />
   </main>
+  
+  <div>
+    <ModelTrain />
+  </div>
 </template>
+
+<script>
+export default {
+  methods: {
+    toTrain(){
+      this.$router.push('./components/ModelTrain.vue')
+    }
+  }
+}
+</script>
 
 <style scoped>
 header {
