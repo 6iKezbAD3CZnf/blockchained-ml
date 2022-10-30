@@ -15,6 +15,9 @@ import EthereumInteraction from './components/EthereumInteraction.vue'
 
   <main>
     <EthereumInteraction />
+    <router-link to="/">Home</router-link> |
+    <router-link to="/about">About</router-link>
+    <router-view />
   </main>
 </template>
 

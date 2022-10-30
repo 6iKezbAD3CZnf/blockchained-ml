@@ -2,10 +2,10 @@
     "name": "blockchained-learning",
     "version": "0.0.0",
     "scripts": {
-        "compile": "./node_modules/.bin/truffle compile",
-        "migrate": "./node_modules/.bin/truffle migrate",
-        "ganache": "./node_modules/.bin/ganache-cli --networkId 429 --chainId 429",
-        "dev": "vite",
+        "compile": "truffle compile",
+        "migrate": "truffle migrate",
+        "ganache": "ganache-cli --networkId 429 --chainId 429",
+        "dev": "vite --host",
         "build": "vite build",
         "preview": "vite preview"
     },
@@ -18,6 +18,7 @@
         "ganache-cli": "^6.12.2",
         "truffle": "^5.6.3",
         "vite": "^3.1.8",
+        "vue-router": "^4.1.6",
         "web3": "^1.8.0"
     }
 }
