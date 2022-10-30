@@ -32,8 +32,8 @@
                 </div>
             </div>
             <button class="button-add-example" v-on:click="addItem">draw next</button>
-            <button class="button-train" v-on:click="train">Train</button>
             <button class="button-clear" @click="clear">clear</button>
+            <button class="button-train" v-on:click="train" :disabled="!has10img">Train</button>
         </div>
 
         <div class="predict-controls">
@@ -48,6 +48,8 @@
 
 <script>
 import * as tf from '@tensorflow/tfjs'
+import { cos, RealDiv } from '@tensorflow/tfjs';
+import { markRaw } from 'vue';
 //import DigitCanvas from './DigitCanvas.vue'
 
 export default {
@@ -55,22 +57,23 @@ export default {
     data() {
         return {
             trained: false,
-            xValues: [],
+            xValues: markRaw([]),
             yValues: [],
-            x: null,
             y: 0,
+            has10img: false,
             predictedValue: 'Click on train!',
             valueToPredict: '',
             numWritten: 0,
 
             size: {
-            width: 250,
-            height: 250,
+                width: 250,
+                height: 250,
             },
+
             mouse: {
-            x: 0,
-            y: 0,
-            down: false,
+                x: 0,
+                y: 0,
+                down: false,
             },
         }
     },
@@ -88,27 +91,18 @@ export default {
     mounted() {
       this.clear();
     },
-    compress(canvas) {
-        const input = tf.browser.fromPixels(this.$refs.canvas, 1)//.toFloat().resizeNearestNeighbor([28, 28])
-        console.log(input.shape);
-    },
     methods: {
         onImageUploaded(e) {
             const target = e.target;
             const files = target.files;
             if (files && files.length > 0) {
                 const file = files[0];
-                console.log("file =", file);
-
                 var reader = new FileReader();
                 reader.readAsArrayBuffer(file);
                 reader.onloadend = function (evt) {
                     if (evt.target.readyState === FileReader.DONE) {
                         const arrayBuffer = evt.target.result;
                         const array = new Uint8Array(arrayBuffer);
-                        console.log("array =", array);
-                        console.log("array.length =", array.length);
-                        console.log("array.byteLength =", array.byteLength);
                     }
                 };
             }
@@ -122,34 +116,23 @@ export default {
                 .div(tf.scalar(255))
                 .expandDims()
                 .reshape([1, 28*28])
-            this.xValues.push(x);
+            this.xValues.push(markRaw(x));
             this.yValues.push(this.y);
-            console.log(this.xValues);
-            console.log(this.yValues);
             this.clear()
             this.numWritten++;
+            if (this.numWritten >= 10) {
+                this.has10img = true;
+            }
         },
         train() {
-            const input = tf.browser
-                .fromPixels(this.$refs.canvas, 1)
-                .toFloat()
-                .resizeNearestNeighbor([28, 28])
-                .div(tf.scalar(255))
-                .expandDims()
-                .reshape([1, 28*28])
-            
             const model = this.model = tf.sequential();
             model.add(tf.layers.dense({units: 100, inputShape: 28*28}));
             model.add(tf.layers.dense({units: 10,
                                         activation: 'softmax'}));
             model.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
 
-
-            const xs = input;
+            const xs = tf.concat(this.xValues, 0);
             const ys = tf.oneHot(this.yValues, 10);
-            console.log('ys')
-            console.log(ys.shape)
-            
             model.fit(xs, ys, {epochs: 50}).then(() => {
                 this.trained = true;
                 this.predictedValue = 'Ready for predictions';
@@ -158,7 +141,6 @@ export default {
         predict() {
             const outputTensor = this.model.predict(tf.tensor2d([this.valueToPredict], [1, 1]));
             this.predictedValue = outputTensor.dataSync()[0];
-            console.log(outputTensor.dataSync());
         },
 
         draw() {
@@ -176,10 +158,6 @@ export default {
             y: event.pageY,
             down: true,
             };
-
-            console.log('in handleMouseDown')
-            console.log(this.$refs.canvas.getContext('2d'))
-  
             const ctx = this.$refs.canvas.getContext('2d');
             ctx.moveTo(this.currentMouse.x, this.currentMouse.y);
         },
