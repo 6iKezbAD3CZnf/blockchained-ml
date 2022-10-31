@@ -1,7 +1,7 @@
 import Web3 from "web3";
 import MetaMaskOnboarding from '@metamask/onboarding'
 
-class MyInterface {
+class Web3Interface {
     constructor() {
         this.forwarderOrigin = undefined;
         this.onboarding = undefined;
@@ -44,4 +44,4 @@ class MyInterface {
     }
 }
 
-export default MyInterface;
+export default Web3Interface;
