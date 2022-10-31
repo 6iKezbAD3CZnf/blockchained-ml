@@ -5,8 +5,7 @@ class ConnectMetaMask {
     constructor() {
         this.web3Interface = new Web3Interface();
         if (this.web3Interface.isMetaMaskInstalled()) {
-            window.ethereum.on('accountsChanged', this.updateButtons);
-            window.ethereum.on('chainChanged', this.updateButtons);
+            this.web3Interface.eventEmitter.on('web3AccountUpdate', this.updateButtons);
         }
     }
 

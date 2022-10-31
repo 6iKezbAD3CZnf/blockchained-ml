@@ -15,6 +15,7 @@
     "devDependencies": {
         "@metamask/onboarding": "^1.0.1",
         "@vitejs/plugin-vue": "^3.1.2",
+        "events": "^3.3.0",
         "ganache-cli": "^6.12.2",
         "truffle": "^5.6.3",
         "vite": "^3.1.8",
