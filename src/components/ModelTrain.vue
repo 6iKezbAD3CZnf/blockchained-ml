@@ -40,11 +40,10 @@
             <button class="button-wide" v-show="has10img" v-on:click="train">Train</button>
         </div>
 
-        <div class="predict-controls">
-            <h2 class="section col-sm-1">Predicting</h2>
-            <input class="field element" v-model.number="valueToPredict" type="number" placeholder="Enter an integer number"><br>
-            <div class="element">{{predictedValue}}</div>
-            <button class="element button--green" v-on:click="predict" :disabled="!trained">Predict</button>
+        <div v-show="modelLoaded" class="predict-controls">
+            <h2 class="section col-sm-1">Predicter</h2>
+            <button class="button-wide" v-on:click="predict">Predict</button>
+            <h2 class="section clo-sm-1" v-show="donePredicting">current accuracy is {{acc}} %!</h2>
         </div>
     </div>
 
@@ -52,9 +51,8 @@
 
 <script>
 import * as tf from '@tensorflow/tfjs'
-import models from './models'
-//import localWeights from './models'
-//import gradients from './models'
+import ai from './models'
+import MNIST from '../assets/test_mnist.json'
 import { markRaw } from 'vue';
 
 export default {
@@ -66,11 +64,12 @@ export default {
             yValues: [],
             y: 0,
             has10img: false,
-            predictedValue: 'Click on train!',
             valueToPredict: '',
             numWritten: 0,
             modelLoaded: false,
-
+            mnist: MNIST,
+            acc: 0,
+            donePredicting: false,
             size: {
                 width: 250,
                 height: 250,
@@ -115,28 +114,41 @@ export default {
             }
         },
         train() {
-            const model = this.model;
+            //const model = this.model;
             const xs = tf.concat(this.xValues, 0);
             const ys = tf.oneHot(this.yValues, 10);
             console.log('model weight before train:')
             for (let i = 1; i < 2; i++) {
-                console.log(this.model.getWeights()[0].dataSync());
+                console.log(ai.model.getWeights()[0].dataSync());
             }
             console.log(xs);
             console.log(ys);
-            model.fit(xs, ys, {epochs: 50, batchSize: 10}).then(() => {
+            ai.model.fit(xs, ys, {epochs: 50, batchSize: 10}).then(() => {
                 this.trained = true;
                 this.predictedValue = 'Ready for predictions';
                 console.log('model weight after train:')
                 for (let i = 0; i < 1; i++) {
-                    console.log(this.model.getWeights()[i].dataSync());
+                    console.log(ai.model.getWeights()[i].dataSync());
                 }
-                this.submitGrad(model);
+                this.submitGrad();
             });
         },
         predict() {
-            const outputTensor = this.model.predict(tf.tensor2d([this.valueToPredict], [1, 1]));
-            this.predictedValue = outputTensor.dataSync()[0];
+            let imglist = [];
+            let labellist = [];
+            this.mnist.forEach(e => imglist.push(tf.tensor(e.image).reshape([1, 28*28])));
+            this.mnist.forEach(e => labellist.push(e.label));
+
+            const xs = tf.concat(imglist.slice(0, 100), 0);
+            const preds = ai.model.predict(xs, {batchSize: 100}).argMax(-1).dataSync();
+            let corrects = 0;
+            for (let i = 0; i < 100; i++) {
+                if (preds[i] == labellist[i]) {
+                    corrects++;
+                }
+            }
+            this.acc = corrects / 100;
+            this.donePredicting = true;
         },
 
         draw() {
@@ -150,9 +162,9 @@ export default {
         },
         handleMouseDown(event) {
             this.mouse = {
-            x: event.pageX,
-            y: event.pageY,
-            down: true,
+                x: event.pageX,
+                y: event.pageY,
+                down: true,
             };
             const ctx = this.$refs.canvas.getContext('2d');
             ctx.moveTo(this.currentMouse.x, this.currentMouse.y);
@@ -162,8 +174,8 @@ export default {
         },
         handleMouseMove(event) {
             Object.assign(this.mouse, {
-            x: event.pageX,
-            y: event.pageY,
+                x: event.pageX,
+                y: event.pageY,
             });
             this.draw();
         },
@@ -176,25 +188,27 @@ export default {
             this.y = y;
         },
         loadModel() {
-            const model = this.model = tf.sequential();
+            const model = tf.sequential();
             model.add(tf.layers.dense({units: 100, inputShape: 28*28}));
-            model.add(tf.layers.dense({units: 10,
-                                        activation: 'softmax'}));
+            model.add(tf.layers.dense({units: 10, activation: 'softmax'}));
+            // load and set global weights here!
             model.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
 
-            for (let i = 0; i < model.getWeights().length; i++) {
-                var layer = model.getWeights()[i].dataSync();
-                models.globalWeights.push(markRaw(layer));
+            ai.model = model;
+
+            for (let i = 0; i < ai.model.getWeights().length; i++) {
+                var layer = ai.model.getWeights()[i].dataSync();
+                ai.globalWeights.push(markRaw(layer));
             }
             this.modelLoaded = true;
         },
-        submitGrad(model) {
+        submitGrad() {
             let wCounter = 0;
-            for (let i = 0; i < model.getWeights().length; i++) {
-                const gW = models.globalWeights[i];
-                const lW = model.getWeights()[i].dataSync();
+            for (let i = 0; i < ai.model.getWeights().length; i++) {
+                const gW = ai.globalWeights[i];
+                const lW = ai.model.getWeights()[i].dataSync();
                 for (let j = 0; j < gW.length; j++) {
-                    models.gradients.set([lW[j] - gW[j]], wCounter + j);
+                    ai.gradients.set([lW[j] - gW[j]], wCounter + j);
                 }
                 wCounter += gW.length;
             }
