@@ -1,6 +1,10 @@
 <template>
     <div>
-        <div>
+        <div v-show="!modelLoaded">
+            <h2 class="section clo-sm-1">Please load the latest model from here</h2>
+            <button class="button-wide" v-on:click="loadModel">load model!</button>
+        </div>
+        <div v-show="modelLoaded">
             <div class="train-controls">
                 <h2 class="section clo-sm-1">Please write digits with your mouse!</h2>
                 <h2 class="section clo-sm-1">You've already drawn {{numWritten}} images</h2>
@@ -9,7 +13,7 @@
                         <canvas
                             ref="canvas"
                             class="canvas"
-                            :witdth="size.width"
+                            :width="size.width"
                             :height="size.height"
                             @mousedown="handleMouseDown"
                             @mouseup="handleMouseUp"
@@ -31,9 +35,9 @@
                     </div>
                 </div>
             </div>
-            <button class="button-add-example" v-on:click="addItem">draw next</button>
-            <button class="button-clear" @click="clear">clear</button>
-            <button class="button-train" v-on:click="train" :disabled="!has10img">Train</button>
+            <button class="button-wide" v-on:click="addItem">draw next</button>
+            <button class="button-wide" @click="clear">clear</button>
+            <button class="button-wide" v-show="has10img" v-on:click="train">Train</button>
         </div>
 
         <div class="predict-controls">
@@ -48,9 +52,10 @@
 
 <script>
 import * as tf from '@tensorflow/tfjs'
-import { cos, RealDiv } from '@tensorflow/tfjs';
+import models from './models'
+//import localWeights from './models'
+//import gradients from './models'
 import { markRaw } from 'vue';
-//import DigitCanvas from './DigitCanvas.vue'
 
 export default {
     name: 'TensorFlowExample',
@@ -64,6 +69,7 @@ export default {
             predictedValue: 'Click on train!',
             valueToPredict: '',
             numWritten: 0,
+            modelLoaded: false,
 
             size: {
                 width: 250,
@@ -92,23 +98,7 @@ export default {
       this.clear();
     },
     methods: {
-        onImageUploaded(e) {
-            const target = e.target;
-            const files = target.files;
-            if (files && files.length > 0) {
-                const file = files[0];
-                var reader = new FileReader();
-                reader.readAsArrayBuffer(file);
-                reader.onloadend = function (evt) {
-                    if (evt.target.readyState === FileReader.DONE) {
-                        const arrayBuffer = evt.target.result;
-                        const array = new Uint8Array(arrayBuffer);
-                    }
-                };
-            }
-        },
         addItem() {
-            //this.xValues.push(0);
             const x = tf.browser
                 .fromPixels(this.$refs.canvas, 1)
                 .toFloat()
@@ -125,17 +115,23 @@ export default {
             }
         },
         train() {
-            const model = this.model = tf.sequential();
-            model.add(tf.layers.dense({units: 100, inputShape: 28*28}));
-            model.add(tf.layers.dense({units: 10,
-                                        activation: 'softmax'}));
-            model.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
-
+            const model = this.model;
             const xs = tf.concat(this.xValues, 0);
             const ys = tf.oneHot(this.yValues, 10);
-            model.fit(xs, ys, {epochs: 50}).then(() => {
+            console.log('model weight before train:')
+            for (let i = 1; i < 2; i++) {
+                console.log(this.model.getWeights()[0].dataSync());
+            }
+            console.log(xs);
+            console.log(ys);
+            model.fit(xs, ys, {epochs: 50, batchSize: 10}).then(() => {
                 this.trained = true;
                 this.predictedValue = 'Ready for predictions';
+                console.log('model weight after train:')
+                for (let i = 0; i < 1; i++) {
+                    console.log(this.model.getWeights()[i].dataSync());
+                }
+                this.submitGrad(model);
             });
         },
         predict() {
@@ -169,7 +165,6 @@ export default {
             x: event.pageX,
             y: event.pageY,
             });
-  
             this.draw();
         },
         clear() {
@@ -179,7 +174,32 @@ export default {
         },
         selectLabel(y) {
             this.y = y;
+        },
+        loadModel() {
+            const model = this.model = tf.sequential();
+            model.add(tf.layers.dense({units: 100, inputShape: 28*28}));
+            model.add(tf.layers.dense({units: 10,
+                                        activation: 'softmax'}));
+            model.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
+
+            for (let i = 0; i < model.getWeights().length; i++) {
+                var layer = model.getWeights()[i].dataSync();
+                models.globalWeights.push(markRaw(layer));
+            }
+            this.modelLoaded = true;
+        },
+        submitGrad(model) {
+            let wCounter = 0;
+            for (let i = 0; i < model.getWeights().length; i++) {
+                const gW = models.globalWeights[i];
+                const lW = model.getWeights()[i].dataSync();
+                for (let j = 0; j < gW.length; j++) {
+                    models.gradients.set([lW[j] - gW[j]], wCounter + j);
+                }
+                wCounter += gW.length;
+            }
         }
+
     },
 }
 </script>
@@ -200,24 +220,12 @@ export default {
     float: left;
     width: 50%;
 }
-.button-train {
-    background: #150f81;
-    width: 200px;
-    height: 60px;
-    color: #f6f6f5;
-}
 .button-label {
     background: #150f81;
     width: 100px;
     height: 100px;
     color: #f6f6f5;
     display: inline;
-}
-.button-add-example {
-    background: #150f81;
-    width: 200px;
-    height: 60px;
-    color: #f6f6f5;
 }
 .button-labels {
     background: #150f81;
@@ -226,13 +234,11 @@ export default {
     color: #f6f6f5;
     display: inline;
 }
-
-.button-clear {
+.button-wide {
     background: #150f81;
     width: 200px;
     height: 60px;
     color: #f6f6f5;
-    display: inline;
 }
 .data-y {
     display: flex;
