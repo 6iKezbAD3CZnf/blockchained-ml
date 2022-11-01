@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div v-show="modelLoaded" class="predict-controls">
-            <h2 class="section col-sm-1">Let's measure the model performance!</h2>
+        <div class="predict-controls">
+            <h2 class="section">Let's measure the model performance!</h2>
             <button class="button-wide" v-on:click="predict">Predict</button>
-            <h2 class="section clo-sm-1" v-show="donePredicting">current accuracy is {{acc}} %!</h2>
+            <h2 class="section" v-show="donePredicting">You improved the model's accuracy by {{accImproved}} %!</h2>
         </div>
         <div>
             <table>
@@ -34,15 +34,13 @@
 import * as tf from '@tensorflow/tfjs'
 import ai from './models'
 import MNIST from '../assets/small_mnist.json'
-import { markRaw } from 'vue';
 
 export default {
-    name: 'TensorFlowExample',
+    name: 'ModelInfer',
     data() {
         return {
-            modelLoaded: true,
-            mnist: MNIST,
-            acc: 0,
+            //mnist: MNIST,
+            accImproved: 0,
             donePredicting: false,
 
             rows: [
@@ -51,6 +49,13 @@ export default {
                         {"cell_type": "TH", "val": ""},
                         {"cell_type": "TH", "val": "global model"},
                         {"cell_type": "TH", "val": "your model"},
+                    ]
+                },
+                {
+                    "cells": [
+                        {"cell_type": "TH", "val": "total accuracy "},
+                        {"cell_type": "TD", "val": 0},
+                        {"cell_type": "TD", "val": 0},
                     ]
                 },
                 {
@@ -131,62 +136,55 @@ export default {
         predict() {
             let imglist = [];
             let labellist = [];
-            this.mnist.forEach(e => imglist.push(tf.tensor(e.image).div(tf.scalar(255)).reshape([1, 28*28])));
-            this.mnist.forEach(e => labellist.push(e.label));
+            MNIST.forEach(e => imglist.push(tf.tensor(e.image).div(tf.scalar(255)).reshape([1, 28*28])));
+            MNIST.forEach(e => labellist.push(e.label));
 
             const testSize = 100;
 
-            const xs = tf.concat(imglist.slice(0, testSize), 0);
-            const gPreds = ai.globalModel.predict(xs, {batchSize: 100}).argMax(-1).dataSync();
-            const myPreds = ai.model.predict(xs, {batchSize: 100}).argMax(-1).dataSync();
-            let gCorrects = 0;
+            const input = tf.concat(imglist.slice(0, testSize), 0);
+
+            // g: global model, my: my model
+            const gPreds = ai.globalModel.predict(input, {batchSize: 100}).argMax(-1).dataSync();
+            const myPreds = ai.model.predict(input, {batchSize: 100}).argMax(-1).dataSync();
+
+            let gCorrects = 0; // 総正解数
             let myCorrects = 0;
-            let gCorrect_label = new Array(10);
+
+            let gCorrect_label = new Array(10); // labelごとの正解数
             let myCorrect_label = new Array(10);
-            let label_nums = new Array(10);
+            let label_nums = new Array(10); // test data中のlabelごとのデータ数
             gCorrect_label.fill(0);
             myCorrect_label.fill(0);
             label_nums.fill(0);
-            console.log(gCorrect_label);
+
             for (let i = 0; i < testSize; i++) {
                 const gpred = gPreds[i];
                 const mypred = myPreds[i];
                 const truth = labellist[i];
                 label_nums[truth]++;
+
                 if (gpred == truth) {
-                    gCorrect_label[gpred]++;
                     gCorrect_label[gpred]++;
                     gCorrects++;
                 }
                 if (mypred == truth) {
                     myCorrect_label[mypred]++;
-                    myCorrect_label[mypred]++;
                     myCorrects++;
                 }
             }
-            console.log(gCorrect_label);
-            console.log(label_nums);
-            for (let i = 0; i < 10; i++) {
-                this.rows[i+1].cells[1].val = gCorrect_label[i] / label_nums[i] * 100;
-                this.rows[i+1].cells[2].val = myCorrect_label[i] / label_nums[i] * 100;
+            for (let i = 0; i < 10; i++) { //正解率を計算して表のセルに代入
+                this.rows[i+2].cells[1].val = (gCorrect_label[i] / label_nums[i] * 100).toFixed(1);
+                this.rows[i+2].cells[2].val = (myCorrect_label[i] / label_nums[i] * 100).toFixed(1);
             }
-            this.acc = corrects / testSize * 100;
+
+            const gAcc = gCorrects / testSize * 100;
+            const myAcc = myCorrects / testSize * 100;
+
+            this.rows[1].cells[1].val = gAcc.toFixed(1);
+            this.rows[1].cells[2].val = myAcc.toFixed(1);
+
             this.donePredicting = true;
-        },
-        loadModel() {
-            const model = tf.sequential();
-            model.add(tf.layers.dense({units: 100, inputShape: 28*28}));
-            model.add(tf.layers.dense({units: 10, activation: 'softmax'}));
-            // load and set global weights here!
-            model.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
-
-            ai.model = model;
-
-            for (let i = 0; i < ai.model.getWeights().length; i++) {
-                var layer = ai.model.getWeights()[i].dataSync();
-                ai.globalWeights.push(markRaw(layer));
-            }
-            this.modelLoaded = true;
+            this.accImproved = (myAcc - gAcc).toFixed(1);
         },
     },
 }
@@ -205,41 +203,15 @@ th {
 th,td {
     padding: 5px 10px
 }
-.pair {
-    display: flex;
-}
 .canvas {
     background-color: #000; /*黒背景*/
     width: 250px;
     height: 250px;
-}
-.field, .field-label {
-    height: 30px;
-    padding: 0px 15px;
-    float: left;
-    width: 50%;
-}
-.button-label {
-    background: #150f81;
-    width: 100px;
-    height: 100px;
-    color: #f6f6f5;
-    display: inline;
-}
-.button-labels {
-    background: #150f81;
-    width: 100px;
-    height: 100px;
-    color: #f6f6f5;
-    display: inline;
 }
 .button-wide {
     background: #150f81;
     width: 200px;
     height: 60px;
     color: #f6f6f5;
-}
-.data-y {
-    display: flex;
 }
 </style>
