@@ -33,7 +33,7 @@
 <script>
 import * as tf from '@tensorflow/tfjs'
 import ai from './models'
-import MNIST from '../assets/test_mnist.json'
+import MNIST from '../assets/small_mnist.json'
 import { markRaw } from 'vue';
 
 export default {
