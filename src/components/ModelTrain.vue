@@ -26,14 +26,17 @@
             <button class="button-wide" v-show="has10img" v-on:click="train">Train</button>
         </div>
 
-        <div v-show="modelLoaded" class="predict-controls">
-            <h2 class="section col-sm-1">Predicter</h2>
-            <button class="button-wide" v-on:click="predict">Predict</button>
-            <h2 class="section clo-sm-1" v-show="donePredicting">current accuracy is {{acc}} %!</h2>
-        </div>
+        <!--
+            <div v-show="modelLoaded" class="predict-controls">
+                <h2 class="section col-sm-1">Predicter</h2>
+                <button class="button-wide" v-on:click="predict">Predict</button>
+                <h2 class="section clo-sm-1" v-show="donePredicting">current accuracy is {{acc}} %!</h2>
+            </div>
+        -->
     </div>
 
 </template>
+
 
 <script>
 import * as tf from '@tensorflow/tfjs'
@@ -79,7 +82,7 @@ export default {
       },
     },
     mounted() {
-      this.clear();
+      //this.clear();
     },
     methods: {
         addItem() {
@@ -161,6 +164,12 @@ export default {
             ctx.beginPath();
         },
         loadModel() {
+            const gModel = tf.sequential();
+            gModel.add(tf.layers.dense({units: 100, inputShape: 28*28}));
+            gModel.add(tf.layers.dense({units: 10, activation: 'softmax'}));
+            // load and set global weights here!
+            gModel.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
+
             const model = tf.sequential();
             model.add(tf.layers.dense({units: 100, inputShape: 28*28}));
             model.add(tf.layers.dense({units: 10, activation: 'softmax'}));
@@ -168,11 +177,14 @@ export default {
             model.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
 
             ai.model = model;
+            ai.globalModel = gModel;
+            console.log(ai.model === ai.globalModel);
 
             for (let i = 0; i < ai.model.getWeights().length; i++) {
                 var layer = ai.model.getWeights()[i].dataSync();
                 ai.globalWeights.push(markRaw(layer));
             }
+            ai.modelLoaded = true;
             this.modelLoaded = true;
         },
         submitGrad() {
