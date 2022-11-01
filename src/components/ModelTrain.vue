@@ -6,8 +6,7 @@
         </div>
         <div v-show="modelLoaded">
             <div class="train-controls">
-                <h2 class="section clo-sm-1">Please write digits with your mouse!</h2>
-                <h2 class="section clo-sm-1">You've already drawn {{numWritten}} images</h2>
+                <h2 class="section clo-sm-1">Please draw {{numWritten}} here!</h2>
                 <div class="pair input">
                     <div>
                         <canvas
@@ -19,19 +18,6 @@
                             @mouseup="handleMouseUp"
                             @mousemove="handleMouseMove"
                         ></canvas>
-                    </div>
-                    <div>
-                        <div>
-                            <div class='button-labels' v-for="i in [0,1,2,3,4]" v-bind:key="i">
-                                <button class='button-label' @click="selectLabel(i)">{{i}}</button>
-                            </div>
-                        </div>
-                        <div>
-                            <div  class='button-labels' v-for="i in [5,6,7,8,9]" v-bind:key="i">
-                                <button class='button-label' @click="selectLabel(i)">{{i}}</button>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -62,14 +48,13 @@ export default {
             trained: false,
             xValues: markRaw([]),
             yValues: [],
-            y: 0,
             has10img: false,
-            valueToPredict: '',
             numWritten: 0,
             modelLoaded: false,
             mnist: MNIST,
             acc: 0,
             donePredicting: false,
+
             size: {
                 width: 250,
                 height: 250,
@@ -106,48 +91,39 @@ export default {
                 .expandDims()
                 .reshape([1, 28*28])
             this.xValues.push(markRaw(x));
-            this.yValues.push(this.y);
+            this.yValues.push(this.numWritten);
             this.clear()
             this.numWritten++;
             if (this.numWritten >= 10) {
                 this.has10img = true;
+                this.numWritten -= 10;
             }
         },
         train() {
-            //const model = this.model;
             const xs = tf.concat(this.xValues, 0);
             const ys = tf.oneHot(this.yValues, 10);
-            console.log('model weight before train:')
-            for (let i = 1; i < 2; i++) {
-                console.log(ai.model.getWeights()[0].dataSync());
-            }
-            console.log(xs);
-            console.log(ys);
             ai.model.fit(xs, ys, {epochs: 50, batchSize: 10}).then(() => {
                 this.trained = true;
-                this.predictedValue = 'Ready for predictions';
-                console.log('model weight after train:')
-                for (let i = 0; i < 1; i++) {
-                    console.log(ai.model.getWeights()[i].dataSync());
-                }
                 this.submitGrad();
             });
         },
         predict() {
             let imglist = [];
             let labellist = [];
-            this.mnist.forEach(e => imglist.push(tf.tensor(e.image).reshape([1, 28*28])));
+            this.mnist.forEach(e => imglist.push(tf.tensor(e.image).div(tf.scalar(255)).reshape([1, 28*28])));
             this.mnist.forEach(e => labellist.push(e.label));
 
-            const xs = tf.concat(imglist.slice(0, 100), 0);
+            const testSize = 100;
+
+            const xs = tf.concat(imglist.slice(0, testSize), 0);
             const preds = ai.model.predict(xs, {batchSize: 100}).argMax(-1).dataSync();
             let corrects = 0;
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < testSize; i++) {
                 if (preds[i] == labellist[i]) {
                     corrects++;
                 }
             }
-            this.acc = corrects / 100;
+            this.acc = corrects / testSize * 100;
             this.donePredicting = true;
         },
 
@@ -183,9 +159,6 @@ export default {
             const ctx = this.$refs.canvas.getContext('2d');
             ctx.clearRect(0, 0, this.size.width, this.size.height);
             ctx.beginPath();
-        },
-        selectLabel(y) {
-            this.y = y;
         },
         loadModel() {
             const model = tf.sequential();
