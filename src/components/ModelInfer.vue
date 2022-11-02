@@ -1,11 +1,23 @@
 <template>
     <div>
-        <div class="predict-controls">
-            <h2 class="section">Let's measure the model performance!</h2>
-            <button class="button-wide" v-on:click="predict">Predict</button>
-            <h2 class="section" v-show="donePredicting">You improved the model's accuracy by {{accImproved}} %!</h2>
+        <div class="infer-handwrite">
+            <h2>AIの予測精度を測ってみましょう！</h2>
+            <canvas
+                ref="canvas"
+                class="canvas"
+                :width="canvasSize.width"
+                :height="canvasSize.height"
+                @mousedown="handleMouseDown"
+                @mouseup="handleMouseUp"
+                @mousemove="handleMouseMove"
+            ></canvas>
+            <button class="button-wide" v-on:click="predictCanvas">キャンバスの数字を予測</button>
+            <h2 v-show="doneCanvasInfer">loadしてきたAIの予測結果: '{{globalInferDigit}}'</h2>
+            <h2 v-show="doneCanvasInfer">あなたが今成長させたAIの予測結果: '{{myInferDigit}}'</h2>
         </div>
-        <div>
+        <div class="infer-testdata">
+            <button class="button-wide" v-on:click="predictTest">100枚のテストデータで予測</button>
+            <h2 v-show="doneTestInfer">あなたのお陰で、AIの予測精度は{{accImproved}} %上昇しました!</h2>
             <table>
             <template v-for="tr in rows" :key="tr.index">
                 <tr>
@@ -39,9 +51,22 @@ export default {
     name: 'ModelInfer',
     data() {
         return {
-            //mnist: MNIST,
             accImproved: 0,
-            donePredicting: false,
+            doneTestInfer: false,
+            doneCanvasInfer: false,
+            globalInferDigit: 0,
+            myInferDigit: 0,
+
+            canvasSize: {
+                width: 250,
+                height: 250,
+            },
+
+            mouse: {
+                x: 0,
+                y: 0,
+                down: false,
+            },
 
             rows: [
                 {
@@ -132,8 +157,35 @@ export default {
 
         }
     },
+    computed: {
+      currentMouse() {
+        const c = this.$refs.canvas;
+        const rect = c.getBoundingClientRect();
+  
+        return {
+          x: this.mouse.x - rect.left,
+          y: this.mouse.y - rect.top,
+        };
+      },
+    },
     methods: {
-        predict() {
+        predictCanvas() {
+            const input = tf.browser
+                .fromPixels(this.$refs.canvas, 1)
+                .toFloat()
+                .resizeNearestNeighbor([28, 28])
+                .div(tf.scalar(255))
+                .expandDims()
+                .reshape([1, 28*28])
+
+            const gpred = ai.globalModel.predict(input).argMax(-1).dataSync();
+            const mypred = ai.model.predict(input).argMax(-1).dataSync();
+
+            this.globalInferDigit = gpred;
+            this.myInferDigit = mypred;
+            this.doneCanvasInfer = true;
+        },
+        predictTest() {
             let imglist = [];
             let labellist = [];
             MNIST.forEach(e => imglist.push(tf.tensor(e.image).div(tf.scalar(255)).reshape([1, 28*28])));
@@ -183,8 +235,44 @@ export default {
             this.rows[1].cells[1].val = gAcc.toFixed(1);
             this.rows[1].cells[2].val = myAcc.toFixed(1);
 
-            this.donePredicting = true;
+            this.doneTestInfer = true;
             this.accImproved = (myAcc - gAcc).toFixed(1);
+        },
+
+        // funcs below here are for canvas
+
+        draw() {
+            if (this.mouse.down) {
+                const ctx = this.$refs.canvas.getContext('2d');
+                ctx.lineTo(this.currentMouse.x, this.currentMouse.y);
+                ctx.strokeStyle = '#fff'; // 白文字
+                ctx.lineWidth = 20;
+                ctx.stroke();
+            }
+        },
+        handleMouseDown(event) {
+            this.mouse = {
+                x: event.pageX,
+                y: event.pageY,
+                down: true,
+            };
+            const ctx = this.$refs.canvas.getContext('2d');
+            ctx.moveTo(this.currentMouse.x, this.currentMouse.y);
+        },
+        handleMouseUp() {
+            this.mouse.down = false;
+        },
+        handleMouseMove(event) {
+            Object.assign(this.mouse, {
+                x: event.pageX,
+                y: event.pageY,
+            });
+            this.draw();
+        },
+        clear() {
+            const ctx = this.$refs.canvas.getContext('2d');
+            ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+            ctx.beginPath();
         },
     },
 }
