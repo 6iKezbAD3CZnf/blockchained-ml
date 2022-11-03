@@ -7,7 +7,7 @@
         "lint": "vue-cli-service lint",
         "compile": "truffle compile",
         "migrate": "truffle migrate",
-        "ganache": "ganache-cli --networkId 429 --chain.chainId 429"
+        "ganache": "ganache-cli --networkId 429 --chainId 429"
     },
     "dependencies": {
         "bootstrap-vue": "^2.0.4",

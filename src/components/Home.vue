@@ -65,7 +65,7 @@ const modals = {
     chainModal: false
 }
 
-const onClick = () => {
+const onClick = async () => {
     if (!web3Interface.isMetaMaskInstalled()) {
         modals.installModal = true;
     } else if (!web3Interface.isMetaMaskConnected()) {
@@ -73,7 +73,9 @@ const onClick = () => {
     } else if (!web3Interface.isChainConnected()) {
         modals.chainModal = true;
     } else {
-        console.log("Ready for loading a model!");
+        console.log("Loading a model.");
+        const model = await web3Interface.fetchModel();
+        console.log(model);
     }
 }
 

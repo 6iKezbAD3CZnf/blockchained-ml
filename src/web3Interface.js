@@ -2,7 +2,12 @@ import { EventEmitter } from 'events';
 import Web3 from "web3";
 import MetaMaskOnboarding from '@metamask/onboarding'
 
-import { supportedChainIds, supportedChains } from './constants.js'
+import {
+    supportedChainIds,
+    supportedChains,
+    contractAddress,
+    abi
+} from './constants.js'
 
 class Web3Interface {
     constructor() {
@@ -13,6 +18,7 @@ class Web3Interface {
         this.web3 = undefined;
         this.accounts = undefined;
         this.chainId = undefined;
+        this.contract = undefined;
 
         if (this.isMetaMaskInstalled()) {
             window.ethereum.on('accountsChanged', this.handleAccountsChanged);
@@ -41,6 +47,7 @@ class Web3Interface {
             .then((id) => { chainId = id; })
             .catch((error) => { console.log(error); });
         this.chainId = chainId;
+        this.contract = new this.web3.eth.Contract(abi, contractAddress);
         this.eventEmitter.emit('web3ChainUpdate');
     }
 
@@ -73,6 +80,31 @@ class Web3Interface {
         return this.chainId === supportedChainIds['private'];
     }
 
+    fetchModel = async () => {
+        const model = new Array(50);
+
+        const blockNumber = await this.contract
+            .methods
+            .get()
+            .call();
+        const events = await this.contract.getPastEvents(
+            'Update',
+            {
+                fromBlock: blockNumber,
+                toBlock: blockNumber
+            },
+            (error, events) => {
+                return events;
+            }
+        );
+        const txHash = events[0].transactionHash;
+        const tx = await this.web3.eth.getTransaction(txHash);
+        const input = tx.input;
+        for (let i=0; i<50; i++) {
+            model[i] = parseInt(input.substring(10+i*64, 74+i*64), 16);
+        }
+        return model;
+    }
 }
 
 const web3Interface = new Web3Interface();
