@@ -1,15 +1,15 @@
-export const SupportedChainIds = {
+export const supportedChainIds = {
     'private': '0x1ad'
 }
 
-export const ChainIdsToNames = {
-    '0x1ad': "6ikezbad3cznf's private test chain"
+export const chainIdsToNames = {
+    '0x1ad': 'Private'
 }
 
-export const SupportedChains = {
+export const supportedChains = {
     'private': {
         chainId: '0x1ad', // 429
-        chainName: "6ikezbad3cznf's private test chain",
+        chainName: 'Private',
         nativeCurrency: {
             name: "Ethereum",
             symbol: "ETH",

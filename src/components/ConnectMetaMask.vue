@@ -1,5 +1,7 @@
 <template>
-    <button id="connectMetaMask">Init</button>
+    <li class="nav-item d-lg-block ml-lg-4">
+        <base-button id="connectMetaMask">MetaMask</base-button>
+    </li>
 </template>
 
 <script>
@@ -29,7 +31,7 @@ const updateButtons = () => {
         button.onclick = onClickConnect;
         button.disabled = false;
     } else {
-        button.innerHTML = web3Interface.accounts[0];
+        button.innerHTML = web3Interface.accounts[0].substring(0, 8);
         button.disabled = true;
         if (web3Interface.onboarding) {
             web3Interface.onboarding.stopOnboarding();

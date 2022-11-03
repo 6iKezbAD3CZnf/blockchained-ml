@@ -1,22 +1,24 @@
 <template>
-    <button id="switchChain"></button>
+    <li class="nav-item d-lg-block ml-lg-4">
+        <base-button id="switchChain" type="success">Switch Chain</base-button>
+    </li>
 </template>
 
 <script>
-import { SupportedChainIds, SupportedChains } from '../constants.js'
+import { supportedChainIds, supportedChains } from '../constants.js'
 import web3Interface from '../web3Interface'
 
-const addChain = () => {
-        const chain = SupportedChains['private'];
+const addChain = async () => {
+        const chain = supportedChains['private'];
         try {
-            ethereum.request({
+            await ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: chain.chainId}],
             });
         } catch (error) {
             if (error.code === 4902) {
                 try {
-                    ethereum.request({
+                    await ethereum.request({
                         method: 'wallet_addEthereumChain',
                         params: [chain],
                     });
@@ -40,9 +42,9 @@ const updateButtons = () => {
     button.onclick = onClick;
 
     const chainId = web3Interface.chainId;
-    if (chainId === SupportedChainIds['private']) {
+    if (chainId === supportedChainIds['private']) {
         button.disabled = true;
-        button.innerText = SupportedChains['private'].chainName;
+        button.innerText = supportedChains['private'].chainName;
     } else {
         button.disabled = false;
         button.innerText = 'Switch Chain';

@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import Web3 from "web3";
 import MetaMaskOnboarding from '@metamask/onboarding'
 
-import { SupportedChainIds, SupportedChains } from './constants.js'
+import { supportedChainIds, supportedChains } from './constants.js'
 
 class Web3Interface {
     constructor() {
@@ -14,8 +14,10 @@ class Web3Interface {
         this.accounts = undefined;
         this.chainId = undefined;
 
-        window.ethereum.on('accountsChanged', this.handleAccountsChanged);
-        window.ethereum.on('chainChanged', this.handleChainChanged);
+        if (this.isMetaMaskInstalled()) {
+            window.ethereum.on('accountsChanged', this.handleAccountsChanged);
+            window.ethereum.on('chainChanged', this.handleChainChanged);
+        }
     }
 
     initialize = async () => {
@@ -68,12 +70,15 @@ class Web3Interface {
     }
 
     isChainConnected = () => {
-        return this.chainId === SupportedChainIds['private'];
+        return this.chainId === supportedChainIds['private'];
     }
 
 }
 
 const web3Interface = new Web3Interface();
-web3Interface.initialize();
+
+window.addEventListener('DOMContentLoaded', () => {
+    web3Interface.initialize();
+});
 
 export default web3Interface;
