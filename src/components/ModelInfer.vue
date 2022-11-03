@@ -158,25 +158,25 @@ export default {
         }
     },
     computed: {
-      currentMouse() {
-        const c = this.$refs.canvas;
-        const rect = c.getBoundingClientRect();
-  
-        return {
-          x: this.mouse.x - rect.left,
-          y: this.mouse.y - rect.top,
-        };
-      },
+        currentMouse() {
+            const c = this.$refs.canvas;
+            const rect = c.getBoundingClientRect();
+
+            return {
+            x: this.mouse.x - rect.left,
+            y: this.mouse.y - rect.top,
+            };
+        },
     },
     methods: {
         predictCanvas() {
             const input = tf.browser
                 .fromPixels(this.$refs.canvas, 1)
                 .toFloat()
-                .resizeNearestNeighbor([28, 28])
+                .resizeNearestNeighbor([ai.inputSize, ai.inputSize])
                 .div(tf.scalar(255))
                 .expandDims()
-                .reshape([1, 28*28])
+                .reshape([1, ai.inputSize*ai.inputSize])
 
             const gpred = ai.globalModel.predict(input).argMax(-1).dataSync();
             const mypred = ai.model.predict(input).argMax(-1).dataSync();
@@ -188,7 +188,13 @@ export default {
         predictTest() {
             let imglist = [];
             let labellist = [];
-            MNIST.forEach(e => imglist.push(tf.tensor(e.image).div(tf.scalar(255)).reshape([1, 28*28])));
+            const originSize = 28;
+            MNIST.forEach(e => imglist.push(
+                                        tf.tensor(e.image)
+                                        .reshape([originSize, originSize, 1])
+                                        .resizeNearestNeighbor([ai.inputSize, ai.inputSize])
+                                        .div(tf.scalar(255))
+                                        .reshape([1, ai.inputSize*ai.inputSize])));
             MNIST.forEach(e => labellist.push(e.label));
 
             const testSize = 100;

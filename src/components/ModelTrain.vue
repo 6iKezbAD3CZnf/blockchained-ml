@@ -72,10 +72,10 @@ export default {
             const resized_img_tensor = tf.browser
                 .fromPixels(this.$refs.canvas, 1)
                 .toFloat()
-                .resizeNearestNeighbor([28, 28])
+                .resizeNearestNeighbor([ai.inputSize, ai.inputSize])
                 .div(tf.scalar(255))
                 .expandDims()
-                .reshape([1, 28*28])
+                .reshape([1, ai.inputSize*ai.inputSize])
 
             this.imgs.push(markRaw(resized_img_tensor));
             this.labels.push(this.digitToWrite);
@@ -96,17 +96,10 @@ export default {
         },
         loadModel() {
             // making global model
-            const gModel = tf.sequential();
-            gModel.add(tf.layers.dense({units: 100, inputShape: 28*28}));
-            gModel.add(tf.layers.dense({units: 10, activation: 'softmax'}));
+            const gModel = ai.makeModel();
+            const model = ai.makeModel();
 
-            const model = tf.sequential();
-            model.add(tf.layers.dense({units: 100, inputShape: 28*28}));
-            model.add(tf.layers.dense({units: 10, activation: 'softmax'}));
-
-            // load and set global weights here!
             let paramsArray = null;
-
             //serverから重みをloadする関数loadWeightsができたら、ここのfalseをtrueに。
             if (false) {
                 paramsArray = new Float32Array(loadWeights());
@@ -116,22 +109,19 @@ export default {
                 }
             }
             else {
-                paramsArray = new Float32Array(79510);
+                paramsArray = new Float32Array(ai.numParams);
                 for (let i = 0; i < paramsArray.length; i++) {
                     paramsArray[i] = Math.random();
                 }
             }
-            const weight_layer = [78400, 1000]; // number of weights per layer
-            const bias_layer = [100, 10]; // number of biases per layer
-            const weight_shapes = [[784, 100], [100, 10]];
             let scannedCnt = 0;
-            for (let layerIdx = 0; layerIdx < 2; layerIdx++) {
+            for (let layerIdx = 0; layerIdx < ai.weight_layer.length; layerIdx++) {
                 const wBegin = scannedCnt;
-                const wEnd = wBegin + weight_layer[layerIdx];
+                const wEnd = wBegin + ai.weight_layer[layerIdx];
                 const bBegin = wEnd;
-                const bEnd = bBegin + bias_layer[layerIdx];
+                const bEnd = bBegin + ai.bias_layer[layerIdx];
                 const w = tf.tensor(paramsArray.slice(wBegin, wEnd))
-                            .reshape([weight_shapes[layerIdx][0], weight_shapes[layerIdx][1]]);
+                            .reshape([ai.weightShapes[layerIdx][0], ai.weightShapes[layerIdx][1]]);
                 const b = tf.tensor(paramsArray.slice(bBegin, bEnd));
                 model.layers[layerIdx].setWeights([w, b]);
                 gModel.layers[layerIdx].setWeights([w.clone(), b.clone()]);
@@ -150,7 +140,7 @@ export default {
         },
         submitGrad() {
             let wCounter = 0;
-            let gradients = new Int32Array(79510);
+            let gradients = new Int32Array(ai.numParams);
             for (let i = 0; i < ai.model.getWeights().length; i++) {
                 const gW = ai.globalModel.getWeights()[i].dataSync();
                 const lW = ai.model.getWeights()[i].dataSync();
