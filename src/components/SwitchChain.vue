@@ -1,7 +1,5 @@
 <template>
-    <li class="nav-item d-lg-block ml-lg-4">
-        <base-button id="switchChain" type="success">Switch Chain</base-button>
-    </li>
+    <base-button id="switchChain" type="success">Switch Chain</base-button>
 </template>
 
 <script>

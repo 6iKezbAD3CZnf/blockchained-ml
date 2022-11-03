@@ -30,10 +30,13 @@
                         <span class="nav-link-inner--text d-lg-none">Github</span>
                     </a>
                 </li>
-                <SwitchChain/>
-                <ConnectMetaMask/>
+                <li class="nav-item d-lg-block ml-lg-4">
+                    <SwitchChain/>
+                </li>
+                <li class="nav-item d-lg-block ml-lg-4">
+                    <ConnectMetaMask/>
+                </li>
             </ul>
-
         </base-nav>
     </header>
 </template>
