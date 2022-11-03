@@ -1,37 +1,22 @@
-<script setup>
-import { SupportedChainIds, SupportedChains } from '@/constants.js'
-import Web3Interface from '../web3/interface'
+<template>
+    <button id="switchChain"></button>
+</template>
 
-class SwitchChain {
-    constructor() {
-        this.web3Interface = new Web3Interface();
-        this.web3Interface.eventEmitter.on('web3ChainUpdate', this.updateButtons);
-    }
+<script>
+import { SupportedChainIds, SupportedChains } from '../constants.js'
+import web3Interface from '../web3Interface'
 
-    initialize = async () => {
-        await this.web3Interface.initialize();
-        this.button = await document.getElementById('switchChainButton');
-        this.button.onclick = this.onClickSwitchChain;
-        this.updateButtons();
-    }
-
-    onClickSwitchChain = async () => {
-        this.button.disabled = true;
-        await this.addChain();
-        this.updateButtons();
-    }
-
-    addChain = async () => {
+const addChain = () => {
         const chain = SupportedChains['private'];
         try {
-            await ethereum.request({
+            ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: chain.chainId}],
             });
         } catch (error) {
             if (error.code === 4902) {
                 try {
-                    await ethereum.request({
+                    ethereum.request({
                         method: 'wallet_addEthereumChain',
                         params: [chain],
                     });
@@ -44,26 +29,28 @@ class SwitchChain {
         }
     }
 
-    updateButtons = () => {
-        if (!this.button) {
-            return;
-        }
+const onClick = () => {
+    const button = document.getElementById('switchChain');
+    button.disabled = true;
+    addChain();
+}
 
-        const chainId = this.web3Interface.chainId;
-        //Now we check to see if MetaMask is installed
-        if (chainId === SupportedChainIds['private']) {
-            this.button.disabled = true;
-            this.button.innerText = SupportedChains['private'].chainName;
-        } else {
-            this.button.disabled = false;
-            this.button.innerText = 'Switch Chain';
-        }
+const updateButtons = () => {
+    const button = document.getElementById('switchChain');
+    button.onclick = onClick;
+
+    const chainId = web3Interface.chainId;
+    if (chainId === SupportedChainIds['private']) {
+        button.disabled = true;
+        button.innerText = SupportedChains['private'].chainName;
+    } else {
+        button.disabled = false;
+        button.innerText = 'Switch Chain';
     }
 }
 
-window.addEventListener('DOMContentLoaded', (new SwitchChain()).initialize);
-</script>
+web3Interface.eventEmitter.on('web3Initialized', updateButtons);
+web3Interface.eventEmitter.on('web3ChainUpdate', updateButtons);
 
-<template>
-    <button id="switchChainButton"></button>
-</template>
+export default {};
+</script>

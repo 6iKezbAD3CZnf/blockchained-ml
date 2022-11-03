@@ -1,54 +1,44 @@
-<script setup>
-import Web3Interface from '../web3/interface'
+<template>
+    <button id="connectMetaMask">Init</button>
+</template>
 
-class ConnectMetaMask {
-    constructor() {
-        this.web3Interface = new Web3Interface();
-        if (this.web3Interface.isMetaMaskInstalled()) {
-            this.web3Interface.eventEmitter.on('web3AccountUpdate', this.updateButtons);
-        }
-    }
+<script>
+import web3Interface from '../web3Interface'
 
-    initialize = async () => {
-        this.button = await document.getElementById('connectButton');
-        await this.web3Interface.initialize();
-        this.updateButtons();
-    }
+const onClickInstall = () => {
+    const button = document.getElementById('connectMetaMask');
+    button.disabled = true;
+    web3Interface.installMetaMask();
+}
 
-    onClickInstall = async () => {
-        this.button.disabled = true;
-        await this.web3Interface.installMetaMask();
-    }
+const onClickConnect = () => {
+    const button = document.getElementById('connectMetaMask');
+    button.disabled = true;
+    web3Interface.connectMetaMask();
+}
 
-    onClickConnect = async () => {
-        this.button.disabled = true;
-        await this.web3Interface.connectMetaMask();
-        this.updateButtons();
-    }
-
-    updateButtons = () => {
-        //Now we check to see if MetaMask is installed
-        if (!this.web3Interface.isMetaMaskInstalled()) {
-            this.button.innerText = 'Click here to install MetaMask!';
-            this.button.onclick = this.onClickInstall;
-            this.button.disabled = false;
-        } else if (!this.web3Interface.isMetaMaskConnected()) {
-            this.button.innerText = 'Connect';
-            this.button.onclick = this.onClickConnect;
-            this.button.disabled = false;
-        } else {
-            this.button.innerText = this.web3Interface.accounts[0];
-            this.button.disabled = true;
-            if (this.web3Interface.onboarding) {
-                this.web3Interface.onboarding.stopOnboarding();
-            }
+const updateButtons = () => {
+    const button = document.getElementById('connectMetaMask');
+    //Now we check to see if MetaMask is installed
+    if (!web3Interface.isMetaMaskInstalled()) {
+        button.innerHTML = "Click here to install MetaMask!";
+        button.onclick = onClickInstall;
+        button.disabled = false;
+    } else if (!web3Interface.isMetaMaskConnected()) {
+        button.innerHTML = 'Connect';
+        button.onclick = onClickConnect;
+        button.disabled = false;
+    } else {
+        button.innerHTML = web3Interface.accounts[0];
+        button.disabled = true;
+        if (web3Interface.onboarding) {
+            web3Interface.onboarding.stopOnboarding();
         }
     }
 }
 
-window.addEventListener('DOMContentLoaded', (new ConnectMetaMask()).initialize);
-</script>
+web3Interface.eventEmitter.on('web3Initialized', updateButtons);
+web3Interface.eventEmitter.on('web3AccountUpdate', updateButtons);
 
-<template>
-    <button id="connectButton"></button>
-</template>
+export default {};
+</script>

@@ -21,6 +21,7 @@ class Web3Interface {
             await this.handleAccountsChanged();
             await this.handleChainChanged();
         }
+        this.eventEmitter.emit('web3Initialized');
     }
 
     handleAccountsChanged = async () => {
@@ -65,4 +66,7 @@ class Web3Interface {
     }
 }
 
-export default Web3Interface;
+const web3Interface = new Web3Interface();
+web3Interface.initialize();
+
+export default web3Interface;
