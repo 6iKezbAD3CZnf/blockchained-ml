@@ -9,12 +9,14 @@ let model = tf.sequential();
 let globalModel = tf.sequential();
 
 function makeModel() {
-        const model = tf.sequential();
-        model.add(tf.layers.dense({units: 10, inputShape: inputSize*inputSize}));
-        return model;
+    const model = tf.sequential();
+    model.add(tf.layers.dense({units: 10, inputShape: inputSize*inputSize}));
+    return model;
 }
 
-
+function logModels() {
+    console.log(model);
+}
 
 export default {
     weight_layer,
@@ -25,4 +27,5 @@ export default {
     model,
     globalModel,
     makeModel,
+    logModels
 };
