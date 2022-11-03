@@ -1,7 +1,12 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import Vue from "vue";
+import App from "./App.vue";
+import router from "./router";
+import Argon from "./argon/plugins/argon-kit";
+import './registerServiceWorker'
 
-// import './assets/main.css'
-
-createApp(App).use(router).mount('#app')
+Vue.config.productionTip = false;
+Vue.use(Argon);
+new Vue({
+  router,
+  render: h => h(App)
+}).$mount("#app");
