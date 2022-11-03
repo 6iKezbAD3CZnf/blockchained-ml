@@ -2,6 +2,8 @@ import { EventEmitter } from 'events';
 import Web3 from "web3";
 import MetaMaskOnboarding from '@metamask/onboarding'
 
+import { SupportedChainIds, SupportedChains } from './constants.js'
+
 class Web3Interface {
     constructor() {
         this.eventEmitter = new EventEmitter();
@@ -64,6 +66,11 @@ class Web3Interface {
     isMetaMaskConnected = () => {
         return this.accounts && this.accounts.length > 0
     }
+
+    isChainConnected = () => {
+        return this.chainId === SupportedChainIds['private'];
+    }
+
 }
 
 const web3Interface = new Web3Interface();

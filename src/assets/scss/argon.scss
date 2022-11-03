@@ -19,13 +19,13 @@
 // Core
 
 @import "bootstrap/functions";
-@import "custom/functions";
+@import "argon/functions";
 
-@import "custom/variables";
+@import "argon/variables";
 @import "bootstrap/variables";
 
 @import "bootstrap/mixins";
-@import "custom/mixins";
+@import "argon/mixins";
 
 // Bootstrap components
 
@@ -62,39 +62,39 @@
 @import "bootstrap/utilities";
 @import "bootstrap/print";
 
-// Custom components
+// argon components
 
-@import "custom/reboot.scss";
-@import "custom/global.scss";
-@import "custom/utilities.scss";
+@import "argon/reboot.scss";
+@import "argon/global.scss";
+@import "argon/utilities.scss";
 
-@import "custom/accordion.scss";
-@import "custom/alerts.scss";
-@import "custom/avatars.scss";
-@import "custom/badge.scss";
-@import "custom/buttons.scss";
-@import "custom/card.scss";
-@import "custom/carousel.scss";
-@import "custom/close.scss";
-@import "custom/custom-forms.scss";
-@import "custom/dropdown.scss";
-@import "custom/footer.scss";
-@import "custom/forms.scss";
-@import "custom/grid.scss";
-@import "custom/icons.scss";
-@import "custom/input-group.scss";
-@import "custom/list-group.scss";
-@import "custom/modal.scss";
-@import "custom/nav.scss";
-@import "custom/navbar.scss";
-@import "custom/pagination.scss";
-@import "custom/popover.scss";
-@import "custom/progress.scss";
-@import "custom/section.scss";
-@import "custom/type.scss";
+@import "argon/accordion.scss";
+@import "argon/alerts.scss";
+@import "argon/avatars.scss";
+@import "argon/badge.scss";
+@import "argon/buttons.scss";
+@import "argon/card.scss";
+@import "argon/carousel.scss";
+@import "argon/close.scss";
+@import "argon/custom-forms.scss";
+@import "argon/dropdown.scss";
+@import "argon/footer.scss";
+@import "argon/forms.scss";
+@import "argon/grid.scss";
+@import "argon/icons.scss";
+@import "argon/input-group.scss";
+@import "argon/list-group.scss";
+@import "argon/modal.scss";
+@import "argon/nav.scss";
+@import "argon/navbar.scss";
+@import "argon/pagination.scss";
+@import "argon/popover.scss";
+@import "argon/progress.scss";
+@import "argon/section.scss";
+@import "argon/type.scss";
 
 // Vendor
 
-@import "custom/vendor/flatpickr.scss";
-@import "custom/vendor/headroom.scss";
-@import "custom/vendor/nouislider.scss";
+@import "argon/vendor/flatpickr.scss";
+@import "argon/vendor/headroom.scss";
+@import "argon/vendor/nouislider.scss";

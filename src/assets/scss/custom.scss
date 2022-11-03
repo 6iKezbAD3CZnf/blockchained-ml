@@ -1,0 +1,14 @@
+@import "argon";
+
+.section-home {
+    height: 100vh;
+    min-height: 500px;
+}
+
+.section-shaped {
+    .shape-style-1 {
+        &.shape-custom {
+            background: linear-gradient(210deg, #ffffff, #000000);
+        }
+    }
+}
