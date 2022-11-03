@@ -1,32 +1,37 @@
 {
-  "name": "vue-argon-design-system",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "bootstrap-vue": "^2.0.4",
-    "flatpickr": "^4.5.1",
-    "nouislider": "^11.1.0",
-    "register-service-worker": "^1.5.2",
-    "vue": "^2.6.6",
-    "vue-flatpickr-component": "^8.1.1",
-    "vue-lazyload": "^1.2.6",
-    "vue-router": "^3.0.2",
-    "vue2-transitions": "^0.2.3"
-  },
-  "devDependencies": {
-    "@metamask/onboarding": "^1.0.1",
-    "@vue/cli-plugin-babel": "^3.4.0",
-    "@vue/cli-plugin-eslint": "^3.4.0",
-    "@vue/cli-plugin-pwa": "^3.4.0",
-    "@vue/cli-service": "^3.4.0",
-    "node-sass": "^4.11.0",
-    "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.6.6",
-    "web3": "^1.8.0"
-  }
+    "name": "blockchained-learning",
+    "version": "0.0.0",
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build",
+        "lint": "vue-cli-service lint",
+        "compile": "truffle compile",
+        "migrate": "truffle migrate",
+        "ganache": "ganache-cli --networkId 429 --chain.chainId 429"
+    },
+    "dependencies": {
+        "bootstrap-vue": "^2.0.4",
+        "flatpickr": "^4.5.1",
+        "nouislider": "^11.1.0",
+        "register-service-worker": "^1.5.2",
+        "vue": "^2.6.6",
+        "vue-flatpickr-component": "^8.1.1",
+        "vue-lazyload": "^1.2.6",
+        "vue-router": "^3.0.2",
+        "vue2-transitions": "^0.2.3"
+    },
+    "devDependencies": {
+        "@tensorflow/tfjs": "^4.0.0",
+        "@metamask/onboarding": "^1.0.1",
+        "@vue/cli-plugin-babel": "^3.4.0",
+        "@vue/cli-plugin-eslint": "^3.4.0",
+        "@vue/cli-plugin-pwa": "^3.4.0",
+        "@vue/cli-service": "^3.4.0",
+        "node-sass": "^4.11.0",
+        "sass-loader": "^7.1.0",
+        "vue-template-compiler": "^2.6.6",
+        "web3": "^1.8.0",
+        "ganache-cli": "^6.12.2",
+        "truffle": "^5.6.3"
+    }
 }
