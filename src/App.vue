@@ -2,11 +2,16 @@
     <div id="app">
         <Header/>
         <main>
-            <fade-transition origin="center" mode="out-in" :duration="250">
-                <router-view/>
-            </fade-transition>
+            <section class="section-home section-shaped my-0">
+                <div class="shape shape-style-1 shape-custom">
+                </div>
+                <div class="container shape-container d-flex">
+                    <fade-transition origin="center" mode="out-in" :duration="250">
+                        <router-view/>
+                    </fade-transition>
+                </div>
+            </section>
         </main>
-        <router-view name="footer"></router-view>
     </div>
 </template>
 <script>

@@ -1,38 +1,28 @@
 <template>
-    <section class="section-home section-shaped my-0">
-        <div class="shape shape-style-1 shape-custom">
-        </div>
-        <div class="container shape-container d-flex">
-            <div class="col px-0">
-                <div class="row justify-content-center align-items-center">
-                    <div class="col-lg-7 text-center pt-lg">
-                        <div v-show="!modelLoaded">
-                            <h2>まずは最新のAIをloadしましょう</h2>
-                            <base-button class="button-wide" v-on:click="loadModel">load AI</base-button>
-                        </div>
-                        <div v-show="modelLoaded">
-                            <div class="train-controls">
-                                <h2>AIの学習のために、 {{digitToWrite}} をここに書いてください</h2>
-                                <canvas
-                                    ref="canvas"
-                                    class="canvas"
-                                    :width="canvasSize.width"
-                                    :height="canvasSize.height"
-                                    @mousedown="handleMouseDown"
-                                    @mouseup="handleMouseUp"
-                                    @mousemove="handleMouseMove"
-                                ></canvas>
-                            </div>
-                            <base-button class="button-wide" v-on:click="drawNext">次の数字を書く</base-button>
-                            <base-button class="button-wide" @click="clear">書き直す</base-button>
-                            <base-button class="button-wide" @click="train">AIを学習させる</base-button>
-                            <base-button class="button-wide" @click="submitGrad">成長したAIを送信</base-button>
-                        </div>
+    <div class="col px-0">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-lg-7 text-center pt-lg">
+                <div>
+                    <div class="train-controls">
+                        <h2>AIの学習のために、 {{digitToWrite}} をここに書いてください</h2>
+                        <canvas
+                            ref="canvas"
+                            class="canvas"
+                            :width="canvasSize.width"
+                            :height="canvasSize.height"
+                            @mousedown="handleMouseDown"
+                            @mouseup="handleMouseUp"
+                            @mousemove="handleMouseMove"
+                        ></canvas>
                     </div>
+                    <base-button class="button-wide" v-on:click="drawNext">次の数字を書く</base-button>
+                    <base-button class="button-wide" @click="clear">書き直す</base-button>
+                    <base-button class="button-wide" @click="train">AIを学習させる</base-button>
+                    <base-button class="button-wide" @click="submitGrad">成長したAIを送信</base-button>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 </template>
 
 

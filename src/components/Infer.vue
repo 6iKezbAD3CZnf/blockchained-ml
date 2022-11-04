@@ -1,54 +1,48 @@
 <template>
-    <section class="section-home section-shaped my-0">
-        <div class="shape shape-style-1 shape-custom">
-        </div>
-        <div class="container shape-container d-flex">
-            <div class="col px-0">
-                <div class="row justify-content-center align-items-center">
-                    <div class="col-lg-7 text-center pt-lg">
-                        <div class="infer-handwrite">
-                            <h2>AIの予測精度を測ってみましょう！</h2>
-                            <canvas
-                                ref="canvas"
-                                class="canvas"
-                                :width="canvasSize.width"
-                                :height="canvasSize.height"
-                                @mousedown="handleMouseDown"
-                                @mouseup="handleMouseUp"
-                                @mousemove="handleMouseMove"
-                            ></canvas>
-                            <base-button class="button-wide" v-on:click="predictCanvas">キャンバスの数字を予測</base-button>
-                            <h2 v-show="doneCanvasInfer">loadしてきたAIの予測結果: '{{globalInferDigit}}'</h2>
-                            <h2 v-show="doneCanvasInfer">あなたが今成長させたAIの予測結果: '{{myInferDigit}}'</h2>
-                        </div>
-                        <div class="infer-testdata">
-                            <base-button class="button-wide" v-on:click="predictTest">100枚のテストデータで予測</base-button>
-                            <h2 v-show="doneTestInfer">あなたのお陰で、AIの予測精度は{{accImproved}} %上昇しました!</h2>
-                            <table>
-                            <!--
-                            <template v-for="tr in rows" :key="tr.index">
-                                <tr>
-                                <template v-for="cell in tr.cells">
+    <div class="col px-0">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-lg-7 text-center pt-lg">
+                <div class="infer-handwrite">
+                    <h2>AIの予測精度を測ってみましょう！</h2>
+                    <canvas
+                        ref="canvas"
+                        class="canvas"
+                        :width="canvasSize.width"
+                        :height="canvasSize.height"
+                        @mousedown="handleMouseDown"
+                        @mouseup="handleMouseUp"
+                        @mousemove="handleMouseMove"
+                    ></canvas>
+                    <base-button class="button-wide" v-on:click="predictCanvas">キャンバスの数字を予測</base-button>
+                    <h2 v-show="doneCanvasInfer">loadしてきたAIの予測結果: '{{globalInferDigit}}'</h2>
+                    <h2 v-show="doneCanvasInfer">あなたが今成長させたAIの予測結果: '{{myInferDigit}}'</h2>
+                </div>
+                <div class="infer-testdata">
+                    <base-button class="button-wide" v-on:click="predictTest">100枚のテストデータで予測</base-button>
+                    <h2 v-show="doneTestInfer">あなたのお陰で、AIの予測精度は{{accImproved}} %上昇しました!</h2>
+                    <table>
+                    <!--
+                    <template v-for="tr in rows" :key="tr.index">
+                        <tr>
+                        <template v-for="cell in tr.cells">
 
-                                    <th v-if="cell.cell_type == 'TH'">
-                                    <p>{{ cell.val }}</p>
-                                    </th>
+                            <th v-if="cell.cell_type == 'TH'">
+                            <p>{{ cell.val }}</p>
+                            </th>
 
-                                    <td v-else-if="cell.cell_type == 'TD'">
-                                    <p>{{ cell.val }} %</p>
-                                    </td>
+                            <td v-else-if="cell.cell_type == 'TD'">
+                            <p>{{ cell.val }} %</p>
+                            </td>
 
-                                </template>
-                                </tr>
-                            </template>
-                            -->
-                            </table>
-                        </div>
-                    </div>
+                        </template>
+                        </tr>
+                    </template>
+                    -->
+                    </table>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 </template>
 
 <script>
