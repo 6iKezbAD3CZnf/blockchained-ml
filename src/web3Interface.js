@@ -81,7 +81,7 @@ class Web3Interface {
     }
 
     fetchModel = async () => {
-        const model = new Array(50);
+        const model = new Array(2287);
 
         const blockNumber = await this.contract
             .methods
@@ -100,7 +100,7 @@ class Web3Interface {
         const txHash = events[0].transactionHash;
         const tx = await this.web3.eth.getTransaction(txHash);
         const input = tx.input;
-        for (let i=0; i<50; i++) {
+        for (let i=0; i<2287; i++) {
             model[i] = parseInt(input.substring(10+i*64, 74+i*64), 16);
         }
         return model;

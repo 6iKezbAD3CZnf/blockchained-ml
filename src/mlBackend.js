@@ -3,11 +3,11 @@ tf.setBackend('cpu');
 
 import web3Interface from './web3Interface'
 
-const numParams = 50;
-const weightLayer = [40];
-const biasLayer = [10];
-const weightShapes = [[4, 10]];
-const inputSize = 2; // input imageのreshape後の一辺の長さ
+const numParams = 2287;
+const weightLayer = [14*14*11, 11*10];
+const biasLayer = [11, 10];
+const weightShapes = [[196, 11], [11, 10]];
+const inputSize = 14; // input imageのreshape後の一辺の長さ
 const weightScalar = 1;
 
 const models = {
@@ -25,7 +25,9 @@ const train = async (xs, ys) => {
 
 const loadModel = async () => {
     console.log("Model loading...");
+    models.globalModel.add(tf.layers.dense({units: 11, inputShape: inputSize*inputSize}));
     models.globalModel.add(tf.layers.dense({units: 10, inputShape: inputSize*inputSize}));
+    models.updatedModel.add(tf.layers.dense({units: 11, inputShape: inputSize*inputSize}));
     models.updatedModel.add(tf.layers.dense({units: 10, inputShape: inputSize*inputSize}));
 
     let paramsArray = null;

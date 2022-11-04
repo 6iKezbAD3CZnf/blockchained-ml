@@ -20,7 +20,7 @@ export const supportedChains = {
     }
 }
 
-export const contractAddress  = "0xd0D2245Ac89514D2651ce03e3C6d6e1fb2636529"
+export const contractAddress  = "0x576Fe8c4C6735aE59D5837b0eD51eaf6d9051a51"
 
 export const abi = [
     {
