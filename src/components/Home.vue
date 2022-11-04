@@ -50,8 +50,9 @@
 </template>
 
 <script>
-import Modal from "../argon/components/Modal.vue";
+import Modal from '../argon/components/Modal.vue'
 import web3Interface from '../web3Interface'
+import mlBackend from '../mlBackend'
 
 const modals = {
     installModal: false,
@@ -67,9 +68,7 @@ const onClick = async () => {
     } else if (!web3Interface.isChainConnected()) {
         modals.chainModal = true;
     } else {
-        console.log("Loading a model.");
-        const model = await web3Interface.fetchModel();
-        console.log(model);
+        await mlBackend.loadModel();
     }
 }
 

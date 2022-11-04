@@ -4,7 +4,6 @@
             <div class="col-lg-7 text-center pt-lg">
                 <div>
                     <div class="train-controls">
-                        <base-button @click='loadModel'>Foo</base-button>
                         <h2>AIの学習のために、 {{digitToWrite}} をここに書いてください</h2>
                         <canvas
                             ref="canvas"
@@ -14,12 +13,12 @@
                             @mousedown="handleMouseDown"
                             @mouseup="handleMouseUp"
                             @mousemove="handleMouseMove"
+                            @mouseout="handleMouseOut"
                         ></canvas>
                     </div>
                     <base-button class="button-wide" v-on:click="drawNext">次の数字を書く</base-button>
                     <base-button class="button-wide" @click="clear">書き直す</base-button>
                     <base-button class="button-wide" @click="train">AIを学習させる</base-button>
-                    <base-button class="button-wide" @click="submitGrad">成長したAIを送信</base-button>
                 </div>
             </div>
         </div>
@@ -29,9 +28,10 @@
 
 <script>
 import * as tf from '@tensorflow/tfjs'
-import ai from './models' // global variables
+/* import ai from './models' // global variables */
 import { markRaw } from 'vue';
 import web3Interface from '../web3Interface'
+import mlBackend from '../mlBackend'
 
 export default {
     name: 'Train',
@@ -44,8 +44,6 @@ export default {
             modelLoaded: false,
             donePredicting: false,
 
-            weightScaler: 1, // use when you load or submit weights
-
             canvasSize: {
                 width: 250,
                 height: 250,
@@ -56,6 +54,13 @@ export default {
                 y: 0,
                 down: false,
             },
+
+            train: () => {
+                const xs = tf.concat(this.imgs, 0);
+                const ys = tf.oneHot(this.labels, 10);
+                mlBackend.train(xs, ys);
+            },
+            uploadModel: mlBackend.uploadModel
         }
     },
     computed: {
@@ -74,10 +79,10 @@ export default {
             const resized_img_tensor = tf.browser
                 .fromPixels(this.$refs.canvas, 1)
                 .toFloat()
-                .resizeNearestNeighbor([ai.inputSize, ai.inputSize])
+                .resizeNearestNeighbor([mlBackend.inputSize, mlBackend.inputSize])
                 .div(tf.scalar(255))
                 .expandDims()
-                .reshape([1, ai.inputSize*ai.inputSize])
+                .reshape([1, mlBackend.inputSize*mlBackend.inputSize])
 
             this.imgs.push(markRaw(resized_img_tensor));
             this.labels.push(this.digitToWrite);
@@ -91,88 +96,6 @@ export default {
                 this.digitToWrite -= 10;
             }
         },
-        train() {
-            const xs = tf.concat(this.imgs, 0);
-            const ys = tf.oneHot(this.labels, 10);
-            ai.model.fit(xs, ys, {epochs: 50, batchSize: 10});
-
-            const gWeights = ai.globalModel.getWeights()[0].dataSync();
-            const nWeights = ai.model.getWeights()[0].dataSync();
-            console.log(gWeights);
-            console.log(nWeights);
-            for (let i=0; i<50; i++) {
-                if (gWeights[i] !== nWeights[i]) {
-                    console.log(gWeights[i]);
-                    console.log(nWeights[i]);
-                }
-            }
-        },
-        async loadModel() {
-            console.log("loading model");
-            // making global model
-            const gModel = ai.makeModel();
-            const model = ai.makeModel();
-
-            let paramsArray = null;
-            //serverから重みをloadする関数loadWeightsができたら、ここのfalseをtrueに。
-            if (true) {
-                console.log("here");
-                const model = await web3Interface.fetchModel();
-                console.log(model);
-                paramsArray = new Float32Array(model);
-
-                for (let i = 0; i < paramsArray.length; i++) {
-                    paramsArray[i] /= this.weightScaler;
-                }
-
-                console.log(paramsArray);
-            }
-            else {
-                paramsArray = new Float32Array(ai.numParams);
-                for (let i = 0; i < paramsArray.length; i++) {
-                    paramsArray[i] = Math.random();
-                }
-            }
-            let scannedCnt = 0;
-            for (let layerIdx = 0; layerIdx < ai.weight_layer.length; layerIdx++) {
-                const wBegin = scannedCnt;
-                const wEnd = wBegin + ai.weight_layer[layerIdx];
-                const bBegin = wEnd;
-                const bEnd = bBegin + ai.bias_layer[layerIdx];
-                const w = tf.tensor(paramsArray.slice(wBegin, wEnd))
-                            .reshape([ai.weightShapes[layerIdx][0], ai.weightShapes[layerIdx][1]]);
-                const b = tf.tensor(paramsArray.slice(bBegin, bEnd));
-                model.layers[layerIdx].setWeights([w, b]);
-                gModel.layers[layerIdx].setWeights([w.clone(), b.clone()]);
-                model.layers[layerIdx].trainable = true;
-                gModel.layers[layerIdx].trainable = true;
-                scannedCnt = bEnd;
-            }
-            gModel.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
-            model.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
-
-            // share them as global variables
-            ai.model = model;
-            ai.globalModel = gModel;
-
-            this.modelLoaded = true;
-        },
-        submitGrad() {
-            let wCounter = 0;
-            let gradients = new Int32Array(ai.numParams);
-            for (let i = 0; i < ai.model.getWeights().length; i++) {
-                const gW = ai.globalModel.getWeights()[i].dataSync();
-                const lW = ai.model.getWeights()[i].dataSync();
-                for (let j = 0; j < gW.length; j++) {
-                    const int32w = parseInt(lW[j]*this.weightScaler - gW[j]*this.weightScaler);
-                    gradients.set([int32w], wCounter + j);
-                }
-                wCounter += gW.length;
-            }
-            return gradients;
-        },
-
-        // funcs below here are for canvas
 
         draw() {
             if (this.mouse.down) {
@@ -201,6 +124,9 @@ export default {
                 y: event.pageY,
             });
             this.draw();
+        },
+        handleMouseOut() {
+            this.mouse.down = false;
         },
         clear() {
             const ctx = this.$refs.canvas.getContext('2d');
