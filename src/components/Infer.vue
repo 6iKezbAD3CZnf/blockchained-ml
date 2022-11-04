@@ -1,36 +1,93 @@
 <template>
-    <div class="col px-0">
-        <div class="row justify-content-center align-items-center">
-            <div class="col-lg-7 text-center pt-lg">
-                <div class="infer-handwrite">
-                    <h2>AIの予測精度を測ってみましょう！</h2>
-                    <Canvas/>
-                    <base-button class="button-wide" v-on:click="predictCanvas">キャンバスの数字を予測</base-button>
-                    <h2 v-show="doneCanvasInfer">loadしてきたAIの予測結果: '{{globalInferDigit}}'</h2>
-                    <h2 v-show="doneCanvasInfer">あなたが今成長させたAIの予測結果: '{{myInferDigit}}'</h2>
+    <div class="container ct-example-row">
+        <div class="row">
+            <div class="col">
+                <div class="text-center pt-lg">
+                    <div class="infer-handwrite">
+                        <h2>AIの予測精度を測ってみましょう！</h2>
+                        <Canvas/>
+                        <base-button class="button-wide" v-on:click="predictCanvas">キャンバスの数字を予測</base-button>
+                        <base-button class="button-wide" @click="clear">書き直す</base-button>
+                        <h2 v-show="doneCanvasInfer">loadしてきたAIの予測結果: '{{globalInferDigit}}'</h2>
+                        <h2 v-show="doneCanvasInfer">あなたが今成長させたAIの予測結果: '{{myInferDigit}}'</h2>
+                    </div>
                 </div>
-                <div class="infer-testdata">
-                    <base-button class="button-wide" v-on:click="predictTest">100枚のテストデータで予測</base-button>
-                    <h2 v-show="doneTestInfer">あなたのお陰で、AIの予測精度は{{accImproved}} %上昇しました!</h2>
-                    <table>
-                    <!--
-                    <template v-for="tr in rows" :key="tr.index">
-                        <tr>
-                        <template v-for="cell in tr.cells">
-
-                            <th v-if="cell.cell_type == 'TH'">
-                            <p>{{ cell.val }}</p>
-                            </th>
-
-                            <td v-else-if="cell.cell_type == 'TD'">
-                            <p>{{ cell.val }} %</p>
-                            </td>
-
-                        </template>
-                        </tr>
-                    </template>
-                    -->
-                    </table>
+            </div>
+            <div class="col">
+                <div class="text-center pt-lg">
+                    <div class="infer-testdata">
+                        <base-button class="button-wide" v-on:click="predictTest">Test</base-button>
+                        <h2/>
+                        <!--
+                        <h2>あなたのお陰で、AIの予測精度は{{accImproved}} %上昇しました!</h2>
+                        -->
+                        <table class="table table-sm">
+                          <thead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Global Model</th>
+                              <th scope="col">Updated Model</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <th scope="row">Total</th>
+                              <td>{{ rows[1].cells[1].val }}</td>
+                              <td>{{ rows[1].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">0</th>
+                              <td>{{ rows[2].cells[1].val }}</td>
+                              <td>{{ rows[2].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">1</th>
+                              <td>{{ rows[3].cells[1].val }}</td>
+                              <td>{{ rows[3].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">2</th>
+                              <td>{{ rows[4].cells[1].val }}</td>
+                              <td>{{ rows[4].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">3</th>
+                              <td>{{ rows[5].cells[1].val }}</td>
+                              <td>{{ rows[5].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">4</th>
+                              <td>{{ rows[6].cells[1].val }}</td>
+                              <td>{{ rows[6].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">5</th>
+                              <td>{{ rows[7].cells[1].val }}</td>
+                              <td>{{ rows[7].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">6</th>
+                              <td>{{ rows[8].cells[1].val }}</td>
+                              <td>{{ rows[8].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">7</th>
+                              <td>{{ rows[9].cells[1].val }}</td>
+                              <td>{{ rows[9].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">8</th>
+                              <td>{{ rows[10].cells[1].val }}</td>
+                              <td>{{ rows[10].cells[2].val }}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">9</th>
+                              <td>{{ rows[11].cells[1].val }}</td>
+                              <td>{{ rows[11].cells[2].val }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,11 +113,7 @@ export default {
             globalInferDigit: 0,
             myInferDigit: 0,
 
-            mouse: {
-                x: 0,
-                y: 0,
-                down: false,
-            },
+            clear: Canvas.methods.clear,
 
             rows: [
                 {

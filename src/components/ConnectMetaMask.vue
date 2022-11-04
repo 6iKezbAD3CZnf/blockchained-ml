@@ -1,7 +1,5 @@
 <template>
-    <li class="nav-item d-lg-block ml-lg-4">
-        <base-button id="connectMetaMask">MetaMask</base-button>
-    </li>
+    <base-button id="connectMetaMask">MetaMask</base-button>
 </template>
 
 <script>

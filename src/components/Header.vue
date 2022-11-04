@@ -24,16 +24,15 @@
             </div>
             <ul class="navbar-nav align-items-lg-center ml-lg-auto">
                 <li class="nav-item d-none d-lg-block ml-lg-4">
-                    <a class="nav-link nav-link-icon" href="https://github.com/creativetimofficial/vue-argon-design-system"
-                       target="_blank" rel="noopener" data-toggle="tooltip" title="Star us on Github">
+                    <a class="nav-link nav-link-icon" href="https://github.com/6iKezbAD3CZnf/blockchained-learning" target="_blank" rel="noopener" data-toggle="tooltip">
                         <i class="fa fa-github"></i>
                         <span class="nav-link-inner--text d-lg-none">Github</span>
                     </a>
                 </li>
-                <li class="nav-item d-lg-block ml-lg-4">
+                <li class="nav-item d-lg-block mt-1">
                     <SwitchChain/>
                 </li>
-                <li class="nav-item d-lg-block ml-lg-4">
+                <li class="nav-item d-lg-block mt-1">
                     <ConnectMetaMask/>
                 </li>
             </ul>

@@ -9,7 +9,7 @@
                     </div>
                     <base-button class="button-wide" v-on:click="drawNext">次の数字を書く</base-button>
                     <base-button class="button-wide" @click="clear">書き直す</base-button>
-                    <base-button class="button-wide" @click="train">AIを学習させる</base-button>
+                    <base-button class="button-wide mt-2" @click="train">AIを学習させる</base-button>
                 </div>
             </div>
         </div>

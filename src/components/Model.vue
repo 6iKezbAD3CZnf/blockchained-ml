@@ -2,7 +2,8 @@
     <div class="col px-0">
         <div class="row justify-content-center align-items-center">
             <div class="col-lg-7 text-center pt-lg">
-                <h1 class="display-1">Model.</h1>
+                <h1 class="display-1 mb-5">Model</h1>
+                <h1/>
                 <base-button @click="onClick">Push your model</base-button>
             </div>
         </div>
