@@ -24,11 +24,13 @@ const train = async (xs, ys) => {
 }
 
 const loadModel = async () => {
+    console.log("Model loading...");
     models.globalModel.add(tf.layers.dense({units: 10, inputShape: inputSize*inputSize}));
     models.updatedModel.add(tf.layers.dense({units: 10, inputShape: inputSize*inputSize}));
 
     let paramsArray = null;
     const fetchedModel = await web3Interface.fetchModel();
+    console.log(fetchedModel);
     paramsArray = new Float32Array(fetchedModel);
     for (let i = 0; i < paramsArray.length; i++) {
         paramsArray[i] /= weightScalar;

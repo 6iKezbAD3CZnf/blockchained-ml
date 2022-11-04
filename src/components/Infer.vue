@@ -4,15 +4,7 @@
             <div class="col-lg-7 text-center pt-lg">
                 <div class="infer-handwrite">
                     <h2>AIの予測精度を測ってみましょう！</h2>
-                    <canvas
-                        ref="canvas"
-                        class="canvas"
-                        :width="canvasSize.width"
-                        :height="canvasSize.height"
-                        @mousedown="handleMouseDown"
-                        @mouseup="handleMouseUp"
-                        @mousemove="handleMouseMove"
-                    ></canvas>
+                    <Canvas/>
                     <base-button class="button-wide" v-on:click="predictCanvas">キャンバスの数字を予測</base-button>
                     <h2 v-show="doneCanvasInfer">loadしてきたAIの予測結果: '{{globalInferDigit}}'</h2>
                     <h2 v-show="doneCanvasInfer">あなたが今成長させたAIの予測結果: '{{myInferDigit}}'</h2>
@@ -47,11 +39,15 @@
 
 <script>
 import * as tf from '@tensorflow/tfjs'
-import ai from './models'
 import MNIST from '../assets/small_mnist.json'
+import mlBackend from '../mlBackend'
+import Canvas from './Canvas'
 
 export default {
     name: 'Infer',
+    components: {
+        Canvas
+    },
     data() {
         return {
             accImproved: 0,
@@ -59,11 +55,6 @@ export default {
             doneCanvasInfer: false,
             globalInferDigit: 0,
             myInferDigit: 0,
-
-            canvasSize: {
-                width: 250,
-                height: 250,
-            },
 
             mouse: {
                 x: 0,
@@ -160,29 +151,19 @@ export default {
 
         }
     },
-    computed: {
-        currentMouse() {
-            const c = this.$refs.canvas;
-            const rect = c.getBoundingClientRect();
-
-            return {
-            x: this.mouse.x - rect.left,
-            y: this.mouse.y - rect.top,
-            };
-        },
-    },
     methods: {
-        predictCanvas() {
+        async predictCanvas() {
+            const canvasElement = await document.getElementById('mnistCanvas');
             const input = tf.browser
-                .fromPixels(this.$refs.canvas, 1)
+                .fromPixels(canvasElement, 1)
                 .toFloat()
-                .resizeNearestNeighbor([ai.inputSize, ai.inputSize])
+                .resizeNearestNeighbor([mlBackend.inputSize, mlBackend.inputSize])
                 .div(tf.scalar(255))
                 .expandDims()
-                .reshape([1, ai.inputSize*ai.inputSize])
+                .reshape([1, mlBackend.inputSize*mlBackend.inputSize])
 
-            const gpred = ai.globalModel.predict(input).argMax(-1).dataSync();
-            const mypred = ai.model.predict(input).argMax(-1).dataSync();
+            const gpred = mlBackend.models.globalModel.predict(input).argMax(-1).dataSync();
+            const mypred = mlBackend.models.updatedModel.predict(input).argMax(-1).dataSync();
 
             this.globalInferDigit = gpred;
             this.myInferDigit = mypred;
@@ -195,9 +176,9 @@ export default {
             MNIST.forEach(e => imglist.push(
                                         tf.tensor(e.image)
                                         .reshape([originSize, originSize, 1])
-                                        .resizeNearestNeighbor([ai.inputSize, ai.inputSize])
+                                        .resizeNearestNeighbor([mlBackend.inputSize, mlBackend.inputSize])
                                         .div(tf.scalar(255))
-                                        .reshape([1, ai.inputSize*ai.inputSize])));
+                                        .reshape([1, mlBackend.inputSize*mlBackend.inputSize])));
             MNIST.forEach(e => labellist.push(e.label));
 
             const testSize = 100;
@@ -205,8 +186,8 @@ export default {
             const input = tf.concat(imglist.slice(0, testSize), 0);
 
             // g: global model, my: my model
-            const gPreds = ai.globalModel.predict(input, {batchSize: 100}).argMax(-1).dataSync();
-            const myPreds = ai.model.predict(input, {batchSize: 100}).argMax(-1).dataSync();
+            const gPreds = mlBackend.models.globalModel.predict(input, {batchSize: 100}).argMax(-1).dataSync();
+            const myPreds = mlBackend.models.updatedModel.predict(input, {batchSize: 100}).argMax(-1).dataSync();
 
             let gCorrects = 0; // 総正解数
             let myCorrects = 0;
@@ -247,43 +228,7 @@ export default {
             this.doneTestInfer = true;
             this.accImproved = (myAcc - gAcc).toFixed(1);
         },
-
-        // funcs below here are for canvas
-
-        draw() {
-            if (this.mouse.down) {
-                const ctx = this.$refs.canvas.getContext('2d');
-                ctx.lineTo(this.currentMouse.x, this.currentMouse.y);
-                ctx.strokeStyle = '#fff'; // 白文字
-                ctx.lineWidth = 20;
-                ctx.stroke();
-            }
-        },
-        handleMouseDown(event) {
-            this.mouse = {
-                x: event.pageX,
-                y: event.pageY,
-                down: true,
-            };
-            const ctx = this.$refs.canvas.getContext('2d');
-            ctx.moveTo(this.currentMouse.x, this.currentMouse.y);
-        },
-        handleMouseUp() {
-            this.mouse.down = false;
-        },
-        handleMouseMove(event) {
-            Object.assign(this.mouse, {
-                x: event.pageX,
-                y: event.pageY,
-            });
-            this.draw();
-        },
-        clear() {
-            const ctx = this.$refs.canvas.getContext('2d');
-            ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
-            ctx.beginPath();
-        },
-    },
+    }
 }
 </script>
 
@@ -299,11 +244,6 @@ th {
 }
 th,td {
     padding: 5px 10px
-}
-.canvas {
-    background-color: #000; /*黒背景*/
-    width: 250px;
-    height: 250px;
 }
 .button-wide {
     background: #150f81;
