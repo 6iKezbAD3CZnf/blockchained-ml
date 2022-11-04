@@ -20,7 +20,7 @@ export const supportedChains = {
     }
 }
 
-export const contractAddress  = "0x8063A7f6Be19B46F0c04e597Efc28e2bc318A77F"
+export const contractAddress  = "0xd0D2245Ac89514D2651ce03e3C6d6e1fb2636529"
 
 export const abi = [
     {
@@ -44,9 +44,9 @@ export const abi = [
     {
       "inputs": [
         {
-          "internalType": "uint32[50]",
+          "internalType": "int32[2287]",
           "name": "weights",
-          "type": "uint32[50]"
+          "type": "int32[2287]"
         }
       ],
       "name": "update",

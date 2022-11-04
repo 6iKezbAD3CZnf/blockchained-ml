@@ -12,9 +12,9 @@
 <script>
 import web3Interface from '../web3Interface'
 
-const input = new Array(50);
-for (let i=0; i<50; i++) {
-    input[i] = i*5;
+const input = new Array(2287);
+for (let i=0; i<2287; i++) {
+    input[i] = i;
 }
 
 const onClick = () => {

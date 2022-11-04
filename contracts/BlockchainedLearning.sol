@@ -2,7 +2,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract BlockchainedLearning {
-    uint64 private constant SIZE = 50;
+    uint64 private constant SIZE = 2287;
 
     uint blockNumber;
     event Update(uint blockNumber);
@@ -11,7 +11,7 @@ contract BlockchainedLearning {
         blockNumber = 0;
     }
 
-    function update(uint32[SIZE] calldata weights) public {
+    function update(int32[SIZE] calldata weights) public {
         blockNumber = block.number;
         emit Update(blockNumber);
     }
