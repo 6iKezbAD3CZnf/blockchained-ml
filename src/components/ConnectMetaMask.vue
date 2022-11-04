@@ -7,16 +7,18 @@
 <script>
 import web3Interface from '../web3Interface'
 
-const onClickInstall = () => {
+const onClickInstall = async () => {
     const button = document.getElementById('connectMetaMask');
     button.disabled = true;
-    web3Interface.installMetaMask();
+    await web3Interface.installMetaMask();
+    button.disabled = false;
 }
 
-const onClickConnect = () => {
+const onClickConnect = async () => {
     const button = document.getElementById('connectMetaMask');
     button.disabled = true;
-    web3Interface.connectMetaMask();
+    await web3Interface.connectMetaMask();
+    button.disabled = false;
 }
 
 const updateButtons = () => {

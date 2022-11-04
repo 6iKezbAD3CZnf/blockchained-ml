@@ -13,7 +13,7 @@ import web3Interface from '../web3Interface'
 
 const input = new Array(50);
 for (let i=0; i<50; i++) {
-    input[i] = 255 + i;
+    input[i] = i*5;
 }
 
 const onClick = () => {

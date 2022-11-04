@@ -4,6 +4,7 @@
             <div class="col-lg-7 text-center pt-lg">
                 <div>
                     <div class="train-controls">
+                        <base-button @click='loadModel'>Foo</base-button>
                         <h2>AIの学習のために、 {{digitToWrite}} をここに書いてください</h2>
                         <canvas
                             ref="canvas"
@@ -30,6 +31,7 @@
 import * as tf from '@tensorflow/tfjs'
 import ai from './models' // global variables
 import { markRaw } from 'vue';
+import web3Interface from '../web3Interface'
 
 export default {
     name: 'Train',
@@ -42,7 +44,7 @@ export default {
             modelLoaded: false,
             donePredicting: false,
 
-            weightScaler: 1000000, // use when you load or submit weights
+            weightScaler: 1, // use when you load or submit weights
 
             canvasSize: {
                 width: 250,
@@ -93,21 +95,37 @@ export default {
             const xs = tf.concat(this.imgs, 0);
             const ys = tf.oneHot(this.labels, 10);
             ai.model.fit(xs, ys, {epochs: 50, batchSize: 10});
-            ai.logModels();
+
+            const gWeights = ai.globalModel.getWeights()[0].dataSync();
+            const nWeights = ai.model.getWeights()[0].dataSync();
+            console.log(gWeights);
+            console.log(nWeights);
+            for (let i=0; i<50; i++) {
+                if (gWeights[i] !== nWeights[i]) {
+                    console.log(gWeights[i]);
+                    console.log(nWeights[i]);
+                }
+            }
         },
-        loadModel() {
+        async loadModel() {
+            console.log("loading model");
             // making global model
             const gModel = ai.makeModel();
             const model = ai.makeModel();
 
             let paramsArray = null;
             //serverから重みをloadする関数loadWeightsができたら、ここのfalseをtrueに。
-            if (false) {
-                paramsArray = new Float32Array(loadWeights());
+            if (true) {
+                console.log("here");
+                const model = await web3Interface.fetchModel();
+                console.log(model);
+                paramsArray = new Float32Array(model);
 
                 for (let i = 0; i < paramsArray.length; i++) {
                     paramsArray[i] /= this.weightScaler;
                 }
+
+                console.log(paramsArray);
             }
             else {
                 paramsArray = new Float32Array(ai.numParams);

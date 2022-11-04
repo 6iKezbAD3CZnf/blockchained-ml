@@ -29,10 +29,11 @@ const addChain = async () => {
         }
     }
 
-const onClick = () => {
+const onClick = async () => {
     const button = document.getElementById('switchChain');
     button.disabled = true;
-    addChain();
+    await addChain();
+    button.disabled = false;
 }
 
 const updateButtons = () => {
