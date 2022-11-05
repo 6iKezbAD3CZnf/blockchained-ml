@@ -21,6 +21,9 @@ for (let i=0; i<2287; i++) {
 }
 
 const onClick = () => {
+    /* web3Interface.contract.methods */
+    /*     .update(input) */
+    /*     .send({ from: web3Interface.accounts[0] }); */
     if (Modals.popUp2()) {
         return;
     }
@@ -28,7 +31,7 @@ const onClick = () => {
     const grad = new Array(mlBackend.numParams);
     const newW = new Array(mlBackend.numParams);
     mlBackend.setWeightsGrads(newW, grad); // get new weights and gradients
-    console.log('submitted weights')
+    console.log('submitting weights')
     console.log(newW);
 
     web3Interface.contract.methods

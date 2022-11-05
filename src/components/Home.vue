@@ -5,10 +5,11 @@
             <div class="col-lg-7 text-center pt-lg">
                 <h1 class="display-1">Blockchained Learning</h1>
                 <p class="lead text-white mt-4 mb-5">Federated Learning on Blockchain.</p>
-                <base-button @click="onClick"
+                <base-button id="loadButton"
+                             @click="onClick"
                              class="mb-3 mb-sm-0"
                              type="secondary">
-                    Download The Latest Model
+                    Load The Latest Model
                 </base-button>
             </div>
         </div>
@@ -19,12 +20,20 @@
 import mlBackend from '../mlBackend'
 import Modals from './Modals'
 
-const onClick = () => {
+const onClick = async () => {
     if (Modals.popUp()) {
         return;
     }
 
-    mlBackend.loadModel();
+    const loadButton = await document.getElementById('loadButton');
+    loadButton.innerHTML = "Loading ...";
+    try {
+        await mlBackend.loadModel();
+        loadButton.innerHTML = "Model Loaded!";
+    } catch(error) {
+        console.error(error);
+        loadButton.innerHTML = "ERROR";
+    }
 }
 
 export default {

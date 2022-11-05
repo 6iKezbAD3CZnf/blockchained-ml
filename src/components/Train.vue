@@ -4,7 +4,8 @@
         <div class="row justify-content-center align-items-center">
             <div class="col-lg-7 text-center pt-lg">
                 <div>
-                    <h2>Write Here</h2>
+                    <h2 class="display-3" v-show="!has10img">Write Here ({{digitToWrite}}/9)</h2>
+                    <h2 class="display-3" v-show="has10img">Write more or let's train!</h2>
                     <h2 class="display-1">" {{digitToWrite}} "</h2>
                     <Canvas/>
                     <base-button class="button-wide mt-2" size="lg" v-on:click="drawNext">Next</base-button>
