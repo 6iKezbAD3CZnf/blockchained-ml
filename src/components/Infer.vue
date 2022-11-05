@@ -1,16 +1,15 @@
 <template>
     <div class="container ct-example-row">
+        <Modals/>
         <div class="row">
             <div class="col">
                 <div class="text-center pt-lg">
-                    <div class="infer-handwrite">
-                        <h2>AIの予測精度を測ってみましょう！</h2>
-                        <Canvas/>
-                        <base-button class="button-wide" v-on:click="predictCanvas">キャンバスの数字を予測</base-button>
-                        <base-button class="button-wide" @click="clear">書き直す</base-button>
-                        <h2 v-show="doneCanvasInfer">loadしてきたAIの予測結果: '{{globalInferDigit}}'</h2>
-                        <h2 v-show="doneCanvasInfer">あなたが今成長させたAIの予測結果: '{{myInferDigit}}'</h2>
-                    </div>
+                    <h2>AIの予測精度を測ってみましょう！</h2>
+                    <Canvas/>
+                    <base-button class="button-wide mt-2" v-on:click="predictCanvas">キャンバスの数字を予測</base-button>
+                    <base-button class="button-wide mt-2" @click="clear">書き直す</base-button>
+                    <h2 v-show="doneCanvasInfer">loadしてきたAIの予測結果: '{{globalInferDigit}}'</h2>
+                    <h2 v-show="doneCanvasInfer">あなたが今成長させたAIの予測結果: '{{myInferDigit}}'</h2>
                 </div>
             </div>
             <div class="col">
@@ -98,11 +97,13 @@
 import * as tf from '@tensorflow/tfjs'
 import MNIST from '../assets/small_mnist.json'
 import mlBackend from '../mlBackend'
+import Modals from './Modals'
 import Canvas from './Canvas'
 
 export default {
     name: 'Infer',
     components: {
+        Modals,
         Canvas
     },
     data() {
@@ -206,6 +207,10 @@ export default {
     },
     methods: {
         async predictCanvas() {
+            if (Modals.popUp2()) {
+                return;
+            }
+
             const canvasElement = await document.getElementById('mnistCanvas');
             const input = tf.browser
                 .fromPixels(canvasElement, 1)
@@ -223,6 +228,10 @@ export default {
             this.doneCanvasInfer = true;
         },
         predictTest() {
+            if (Modals.popUp2()) {
+                return;
+            }
+
             let imglist = [];
             let labellist = [];
             const originSize = 28;

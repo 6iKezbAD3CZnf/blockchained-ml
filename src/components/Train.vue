@@ -1,14 +1,13 @@
 <template>
     <div class="col px-0">
+        <Modals/>
         <div class="row justify-content-center align-items-center">
             <div class="col-lg-7 text-center pt-lg">
                 <div>
-                    <div class="train-controls">
-                        <h2>AIの学習のために、 {{digitToWrite}} をここに書いてください</h2>
-                        <Canvas/>
-                    </div>
-                    <base-button class="button-wide" v-on:click="drawNext">次の数字を書く</base-button>
-                    <base-button class="button-wide" @click="clear">書き直す</base-button>
+                    <h2>AIの学習のために、 {{digitToWrite}} をここに書いてください</h2>
+                    <Canvas/>
+                    <base-button class="button-wide mt-2" v-on:click="drawNext">次の数字を書く</base-button>
+                    <base-button class="button-wide mt-2" @click="clear">書き直す</base-button>
                     <base-button class="button-wide mt-2" @click="train">AIを学習させる</base-button>
                 </div>
             </div>
@@ -20,11 +19,13 @@
 import * as tf from '@tensorflow/tfjs'
 import { markRaw } from 'vue';
 import mlBackend from '../mlBackend'
+import Modals from './Modals'
 import Canvas from './Canvas'
 
 export default {
     name: 'Train',
     components: {
+        Modals,
         Canvas
     },
     data() {
@@ -36,6 +37,10 @@ export default {
             modelLoaded: false,
             donePredicting: false,
             train: () => {
+                if (Modals.popUp2()) {
+                    return;
+                }
+
                 const xs = tf.concat(this.imgs, 0);
                 const ys = tf.oneHot(this.labels, 10);
                 mlBackend.train(xs, ys);
@@ -46,6 +51,10 @@ export default {
     },
     methods: {
         async drawNext() {
+            if (Modals.popUp2()) {
+                return;
+            }
+
             const canvasElement = await document.getElementById('mnistCanvas');
             const resized_img_tensor = tf.browser
                 .fromPixels(canvasElement, 1)

@@ -8,9 +8,10 @@ const weightLayer = [14*14*11, 11*10];
 const biasLayer = [11, 10];
 const weightShapes = [[196, 11], [11, 10]];
 const inputSize = 14; // input imageのreshape後の一辺の長さ
-const weightScalar = 1;
+const weightScalar = 1000;
 
 const models = {
+    loaded: false,
     globalModel: tf.sequential(),
     updatedModel: tf.sequential()
 }
@@ -55,6 +56,7 @@ const loadModel = async () => {
     }
     models.globalModel.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
     models.updatedModel.compile({loss: 'categoricalCrossentropy', optimizer: 'adam'});
+    models.loaded = true;
 }
 
 const uploadModel = () => {
