@@ -6,9 +6,8 @@
                 <h1 class="display-1">Blockchained Learning</h1>
                 <p class="lead text-white mt-4 mb-5">Federated Learning on Blockchain.</p>
                 <base-button @click="onClick"
-                             href="https://www.creative-tim.com/product/vue-argon-design-system"
                              class="mb-3 mb-sm-0"
-                             type="white">
+                             type="secondary">
                     Download The Latest Model
                 </base-button>
             </div>

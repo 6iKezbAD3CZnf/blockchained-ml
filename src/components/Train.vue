@@ -4,11 +4,12 @@
         <div class="row justify-content-center align-items-center">
             <div class="col-lg-7 text-center pt-lg">
                 <div>
-                    <h2>AIの学習のために、 {{digitToWrite}} をここに書いてください</h2>
+                    <h2>Write Here</h2>
+                    <h2 class="display-1">" {{digitToWrite}} "</h2>
                     <Canvas/>
-                    <base-button class="button-wide mt-2" v-on:click="drawNext">次の数字を書く</base-button>
-                    <base-button class="button-wide mt-2" @click="clear">書き直す</base-button>
-                    <base-button class="button-wide mt-2" @click="train">AIを学習させる</base-button>
+                    <base-button class="button-wide mt-2" size="lg" v-on:click="drawNext">Next</base-button>
+                    <base-button class="button-wide mt-2" size="lg" @click="clear">Reset</base-button>
+                    <base-button class="button-wide mt-2" size="lg" @click="train">Train</base-button>
                 </div>
             </div>
         </div>
@@ -80,11 +81,3 @@ export default {
     }
 }
 </script>
-<style scoped>
-.button-wide {
-    background: #150f81;
-    width: 200px;
-    height: 60px;
-    color: #f6f6f5;
-}
-</style>

@@ -1,10 +1,11 @@
 <template>
-    <base-button id="switchChain" type="success">Switch Chain</base-button>
+    <base-button id="switchChain" type="primary">Switch Chain</base-button>
 </template>
 
 <script>
 import { supportedChainIds, supportedChains } from '../constants.js'
 import web3Interface from '../web3Interface'
+import Modals from './Modals'
 
 const addChain = async () => {
         const chain = supportedChains['private'];
@@ -30,6 +31,10 @@ const addChain = async () => {
     }
 
 const onClick = async () => {
+    if (Modals.popUp3()) {
+        return;
+    }
+
     const button = document.getElementById('switchChain');
     button.disabled = true;
     await addChain();

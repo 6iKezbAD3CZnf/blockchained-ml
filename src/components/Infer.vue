@@ -296,24 +296,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-table {
-    border-collapse: collapse;
-}
-tr:nth-child(odd) {
-    background-color: #ddd
-}
-th {
-    color: #000
-}
-th,td {
-    padding: 5px 10px
-}
-.button-wide {
-    background: #150f81;
-    width: 200px;
-    height: 60px;
-    color: #f6f6f5;
-}
-</style>

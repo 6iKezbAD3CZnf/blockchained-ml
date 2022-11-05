@@ -1,16 +1,5 @@
 <template>
     <div>
-        <modal :show.sync="modals.chainModal"
-               gradient="warning"
-               modal-classes="modal-danger modal-dialog-centered">
-            <h6 slot="header" class="modal-title" id="modal-title-notification">Your blockchain network is not allowed</h6>
-
-            <div class="py-3 text-center">
-                <i class="ni ni-bell-55 ni-3x"></i>
-                <h4 class="heading mt-4">Please Switch To Appropriate Network</h4>
-                <p>You can select networks by clicking 'Switch' button in the above.</p>
-            </div>
-        </modal>
         <modal id="installModal"
                :show.sync="modals.installModal"
                gradient="primary"
@@ -32,6 +21,16 @@
                 <i class="ni ni-bell-55 ni-3x"></i>
                 <h4 class="heading mt-4">Please Connect MetaMask</h4>
                 <p>You can connect MetaMask by clicking 'Connect' button in the above.</p>
+            </div>
+        </modal>
+        <modal :show.sync="modals.chainModal"
+               modal-classes="modal-dialog-centered">
+            <h6 slot="header" class="modal-title" id="modal-title-notification">Your blockchain network is not allowed</h6>
+
+            <div class="py-3 text-center">
+                <i class="ni ni-bell-55 ni-3x"></i>
+                <h4 class="heading mt-4">Please Switch To Appropriate Network</h4>
+                <p>You can select networks by clicking 'Switch' button in the above.</p>
             </div>
         </modal>
         <modal :show.sync="modals.loadModal"
@@ -88,6 +87,18 @@ const popUp2 = () => {
     return false;
 }
 
+const popUp3 = () => {
+    if (!web3Interface.isMetaMaskInstalled()) {
+        modals.installModal = true;
+        return true;
+    } else if (!web3Interface.isMetaMaskConnected()) {
+        modals.connectModal = true;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 export default {
     components: {
         Modal
@@ -98,6 +109,7 @@ export default {
         }
     },
     popUp,
-    popUp2
+    popUp2,
+    popUp3
 }
 </script>

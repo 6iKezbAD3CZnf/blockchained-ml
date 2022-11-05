@@ -23,7 +23,7 @@ const updateButtons = () => {
     const button = document.getElementById('connectMetaMask');
     //Now we check to see if MetaMask is installed
     if (!web3Interface.isMetaMaskInstalled()) {
-        button.innerHTML = "Click here to install MetaMask!";
+        button.innerHTML = "MetaMask";
         button.onclick = onClickInstall;
         button.disabled = false;
     } else if (!web3Interface.isMetaMaskConnected()) {
