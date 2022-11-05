@@ -212,6 +212,7 @@ export default {
                 .toFloat()
                 .resizeNearestNeighbor([mlBackend.inputSize, mlBackend.inputSize])
                 .div(tf.scalar(255))
+                .sub(tf.scalar(0.5))
                 .expandDims()
                 .reshape([1, mlBackend.inputSize*mlBackend.inputSize])
 
@@ -231,6 +232,8 @@ export default {
                                         .reshape([originSize, originSize, 1])
                                         .resizeNearestNeighbor([mlBackend.inputSize, mlBackend.inputSize])
                                         .div(tf.scalar(255))
+                                        .sub(tf.scalar(0.5))
+                                        .expandDims()
                                         .reshape([1, mlBackend.inputSize*mlBackend.inputSize])));
             MNIST.forEach(e => labellist.push(e.label));
 

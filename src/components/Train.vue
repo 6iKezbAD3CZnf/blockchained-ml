@@ -40,7 +40,7 @@ export default {
                 const ys = tf.oneHot(this.labels, 10);
                 mlBackend.train(xs, ys);
             },
-            uploadModel: mlBackend.uploadModel,
+            setWeightsGrads: mlBackend.setWeightsGrads,
             clear: Canvas.methods.clear
         }
     },
@@ -52,6 +52,7 @@ export default {
                 .toFloat()
                 .resizeNearestNeighbor([mlBackend.inputSize, mlBackend.inputSize])
                 .div(tf.scalar(255))
+                .sub(tf.scalar(0.5))
                 .expandDims()
                 .reshape([1, mlBackend.inputSize*mlBackend.inputSize])
 
