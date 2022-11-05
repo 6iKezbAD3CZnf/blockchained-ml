@@ -100,9 +100,30 @@ class Web3Interface {
         const txHash = events[0].transactionHash;
         const tx = await this.web3.eth.getTransaction(txHash);
         const input = tx.input;
+
+        // Parse unsigned 64 bit string to signed int
+        let value = String();
+        let sign = Array(2287);
         for (let i=0; i<2287; i++) {
-            model[i] = parseInt(input.substring(10+i*64, 74+i*64), 16);
+            if (input[10+i*64] === 'f') {
+                sign[i] = false;
+                for (let j=0; j<64; j++) {
+                    const byteNum = 15 - parseInt(input[10+i*64+j], 16);
+                    value += byteNum.toString(16);
+                }
+            } else {
+                sign[i] = true;
+                value += input.substring(10+i*64, 10+(i+1)*64);
+            }
         }
+        for (let i=0; i<2287; i++) {
+            if (sign[i]) {
+                model[i] = parseInt(value.substring(i*64, (i+1)*64), 16);
+            } else {
+                model[i] = - parseInt(value.substring(i*64, (i+1)*64), 16) - 1;
+            }
+        }
+
         return model;
     }
 }
