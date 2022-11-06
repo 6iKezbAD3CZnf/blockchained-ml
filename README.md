@@ -27,6 +27,9 @@ function(public gradients, public new_hash, private old_weights, public old_hash
 ```
 この関数に対応したzkProofをスマートコントラクト上で検証することで、正しい勾配ベクトルのハッシュ値のみをEVM上に乗せ、モデルデータを検証可能な形でブロックチェーン外のストレージに対比させることが可能になる。これはガス代の削減に寄与すると同時に、結果的に勾配ベクトルの制限を達成する。
 
+## The Latest Mode Data Availability
+上で説明したプロセスにより、スマートコントラクト上には検証された勾配ベクトルの履歴をEVMのログ領域からロードすることができる。これらの勾配ベクトルのすべての和を初期モデル(スマートコントラクトデプロイ時に決定する)に足すことにより、ユーザーは最新モデルを再構築可能になる。実用上は、誰かからモデルデータをもらい、スマートコントラクト上のハッシュ値と比較することで安くモデルの検証を完了することができる。
+
 ## Structures
 - `/contracts`: Smart contract verifying zk-SNARK proofs and update the global ML model.
 - `/src`: Web app sources and ML backends written in TensorFlow.js.
