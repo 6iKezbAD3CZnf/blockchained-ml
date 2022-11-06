@@ -1,5 +1,5 @@
-# blockchained-learning
-Federated Learning on Blockchain.
+# blockchained-ml
+Federated Learning on Blockchain exploiting zk-SNARK.
 
 ## About
 個々人がプライベートなデータで学習させたAIを、サーバーを介して共有して新たなAIを構成するFederated Learningという手法が脚光を浴びている。だが、この手法はサーバーによるAIモデルの改ざんや、ユーザーによるAIモデル攻撃のリスクを孕んでいる。この解決のため、我々はサーバーの役割をブロックチェーンで置き換えた、Blockchained MLを開発した。サーバー処理をスマートコントラクトで実装することで、AIモデルの更新プロセスに偽りが無いことが誰でも検証可能になる。更に、スマートコントラクト上でゼロ知識証明の検証を行うことで、AIモデルの更新という重い処理をアウトソース化すると同時に、AIモデルへの悪意ある操作を防ぐことができる。
