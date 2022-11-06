@@ -1,6 +1,8 @@
 # blockchained-ml
 Federated Learning on Blockchain exploiting zk-SNARK.
 
+![App Image](public/img/app.png)
+
 ## App
 http://tk2-252-35891.vs.sakura.ne.jp:5173/
 
