@@ -126,6 +126,14 @@ class Web3Interface {
 
         return model;
     }
+
+    getModelHash = async () => {
+        const modelHash = await this.contract
+            .methods
+            .getModelHash()
+            .call();
+        return modelHash;
+    }
 }
 
 const web3Interface = new Web3Interface();

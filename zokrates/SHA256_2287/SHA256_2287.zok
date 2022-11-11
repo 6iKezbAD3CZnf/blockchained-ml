@@ -1,5 +1,0 @@
-import "hashes/sha256/sha256";
-
-def main(u32[4][16] input) -> u32[8] {
-    return sha256(input);
-}

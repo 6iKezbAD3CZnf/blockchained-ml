@@ -10,6 +10,10 @@
             @mouseup="handleMouseUp"
             @mousemove="handleMouseMove"
             @mouseout="handleMouseOut"
+            @touchstart="handleMouseDown"
+            @touchend="handleMouseUp"
+            @touchmove="handleMouseMove"
+            @touchcancel="handleMouseOut"
         />
     </div>
 </template>

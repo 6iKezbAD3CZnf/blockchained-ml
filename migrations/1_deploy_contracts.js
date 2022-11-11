@@ -1,5 +1,5 @@
-const BlockchainedLearning = artifacts.require("BlockchainedLearning");
+const BlockchainedML = artifacts.require("BlockchainedML");
 
 module.exports = function(deployer) {
-    deployer.deploy(BlockchainedLearning);
+    deployer.deploy(BlockchainedML);
 };

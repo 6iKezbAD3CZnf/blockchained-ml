@@ -1,0 +1,17 @@
+import "hashes/mimc7/mimc7" as mimc7;
+
+def multi_mimc7<N>(field[N] x, field k) -> field {
+    field[N+1] mut r = [0; N+1];
+
+    r[0] = k;
+    for u32 i in 0..N {
+        field hash = mimc7::<5>(x[i], k);
+        r[i+1] = r[i] + x[i] + hash;
+    }
+
+    return r[N];
+}
+
+def main(field[142] input) -> field {
+    return multi_mimc7::<142>(input, 5);
+}

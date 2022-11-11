@@ -1,0 +1,26 @@
+import "hashes/mimc7/mimc7" as mimc7;
+
+def multi_mimc7<N>(field[N] x, field k) -> field {
+    field[N+1] mut r = [0; N+1];
+
+    r[0] = k;
+    for u32 i in 0..N {
+        field hash = mimc7::<5>(x[i], k);
+        r[i+1] = r[i] + x[i] + hash;
+    }
+
+    return r[N];
+}
+
+def main(field[142] grad, field new_hash, field old_hash, private field[142] old_weights) {
+    assert(old_hash == multi_mimc7(old_weights, 5));
+
+    field[142] mut new_weights = [0; 142];
+    for u32 i in 0..142 {
+        new_weights[i] = old_weights[i] + grad[i];
+    }
+
+    assert(new_hash == multi_mimc7(new_weights, 5));
+
+    return;
+}

@@ -94,7 +94,7 @@ const loadModel = async () => {
     models.loaded = true;
 }
 
-const setWeightsGrads = (newWeights, gradients) => {
+const setWeightsGrads = (oldWeights, newWeights, gradients) => {
     let wCounter = 0;
     for (let i = 0; i < models.updatedModel.getWeights().length; i++) {
         const gW = models.globalModel.getWeights()[i].dataSync();
@@ -102,6 +102,7 @@ const setWeightsGrads = (newWeights, gradients) => {
         for (let j = 0; j < gW.length; j++) {
             const int32grad = parseInt(lW[j]*weightScalar - gW[j]*weightScalar);
             gradients[wCounter + j] = int32grad;
+            oldWeights[wCounter + j] = parseInt(gW[j]*weightScalar);
             newWeights[wCounter + j] = parseInt(lW[j]*weightScalar);
         }
         wCounter += gW.length;
