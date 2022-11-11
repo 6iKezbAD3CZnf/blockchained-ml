@@ -1,4 +1,4 @@
-# blockchained-ml
+# Blockchained ML
 Federated Learning on Blockchain exploiting zk-SNARK.
 
 ![App Image](public/img/app.png)
